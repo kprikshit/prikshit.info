@@ -2,7 +2,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Prikshit - Software Developer</title>
+    <title>Prikshit Kumar</title>
     <link href="https://fonts.googleapis.com/css2?family=Titillium+Web:wght@400;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
@@ -66,11 +66,12 @@
     <div class="full-background bg-white">
         <div class="content-area rounded-lg shadow-md p-8 text-center mt-20">
             <div class="mb-6">
-                <p class="text-gray-100 transition-colors duration-300">Software Developer</p>
+                <h1 class="text-3xl font-semibold transition-colors duration-300">Prikshit Kumar</h1>
+                <p class="text-gray-500 transition-colors duration-300">Software Engineer</p>
             </div>
             <div class="mb-6">
                 <p class="text-gray-500 leading-relaxed transition-colors duration-300">
-                    Hello! I'm a software developer passionate about solving read world problems and building systems. I enjoy working on challenging projects & learning new technologies.
+                    Hello! I'm a software engineer passionate about solving read world problems and building systems. I enjoy working on challenging projects & learning new technologies.
                 </p>
             </div>
             <div class="mb-4 space-x-4">
@@ -191,7 +192,11 @@
 
             // Theme toggle click handler
             themeToggle.addEventListener('click', () => {
-                document.documentElement.classList.toggle('dark');
+                if (body.classList.contains('dark')) {
+                    setLightMode();
+                } else {
+                    setDarkMode();
+                }
             });
         });
     </script>
