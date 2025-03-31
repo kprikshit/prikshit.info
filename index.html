@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prikshit - Software Developer</title>
+    <link href="https://fonts.googleapis.com/css2?family=Titillium+Web:wght@400;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        :root {
+            --bg-color: #ffffff;
+            --text-color: #4a5568;
+            --text-content-color: #4a5568;
+        }
+        body {
+            font-family: 'Titillium Web', sans-serif;
+        }
+        .full-background {
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+        .content-area {
+            width: 100%;
+            max-width: 800px;
+            margin-top: 2rem;
+            color: var(--text-content-color);
+            transition: color 0.3s ease;
+        }
+        #dark-mode-toggle {
+            position: fixed;
+            top: 1rem;
+            right: 1rem;
+            z-index: 10;
+            display: flex;
+            gap: 0.5rem;
+            padding: 0.5rem;
+            border-radius: 9999px;
+            background-color: #e5e7eb;
+        }
+        .dark-mode-icon, .light-mode-icon, .system-mode-icon {
+            width: 24px;
+            height: 24px;
+            cursor: pointer;
+            opacity: 0.7;
+            transition: opacity 0.3s ease;
+        }
+        .dark-mode-icon.active, .light-mode-icon.active, .system-mode-icon.active {
+            opacity: 1;
+        }
+        .dark-mode-icon:hover, .light-mode-icon:hover, .system-mode-icon:hover {
+            opacity: 1;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 text-gray-700"> <div id="dark-mode-toggle">
+        <svg class="light-mode-icon active" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 8v1"/><path d="M12 15v1"/><path d="m17.7 7.7-1.4 1.4"/><path d="m7.7 7.7 1.4 1.4"/><path d="m20 12h-1"/><path d="m5 12h-1"/><path d="m16.3 16.3-1.4-1.4"/><path d="m7.7 16.3 1.4-1.4"/></svg>
+        <svg class="dark-mode-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
+        <svg class="system-mode-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.9 4.9 1.4 1.4"/><path d="m17.7 17.7 1.4 1.4"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m4.9 19.1 1.4-1.4"/><path d="m17.7 6.3 1.4-1.4"/><path d="M12 12a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z"/></svg>
+    </div>
+    <div class="full-background bg-white">
+        <div class="content-area rounded-lg shadow-md p-8 text-center">
+            <div class="mb-6">
+                <h1 class="text-2xl font-semibold text-gray-800">Prikshit</h1>
+                <p class="text-gray-600">Software Developer</p>
+            </div>
+            <div class="mb-6">
+                <p class="text-gray-500 leading-relaxed">
+                    Hello! I'm a software developer passionate about building things that solve problems. I enjoy working on challenging projects and continuously learning new technologies.
+                </p>
+            </div>
+            <div class="mb-4 space-x-4">
+                <a href="https://www.linkedin.com/in/kprikshit" target="_blank" rel="noopener noreferrer" class="bg-gray-800 hover:bg-gray-700 text-white font-semibold py-2 px-4 rounded-full transition duration-300 ease-in-out">
+                    LinkedIn
+                </a>
+                <a href="https://github.com/kprikshit" target="_blank" rel="noopener noreferrer" class="bg-gray-800 hover:bg-gray-700 text-white font-semibold py-2 px-4 rounded-full transition duration-300 ease-in-out">
+                    GitHub
+                </a>
+            </div>
+        </div>
+    </div>
+    <script>
+        const darkModeToggle = document.getElementById('dark-mode-toggle');
+        const body = document.body;
+        const fullBackground = document.querySelector('.full-background');
+        const contentArea = document.querySelector('.content-area');
+        const lightModeIcon = document.querySelector('.light-mode-icon');
+        const darkModeIcon = document.querySelector('.dark-mode-icon');
+        const systemModeIcon = document.querySelector('.system-mode-icon');
+
+        const systemPrefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+        function setDarkMode() {
+            body.classList.add('dark');
+            fullBackground.classList.remove('bg-white');
+            fullBackground.classList.add('bg-gray-800');
+            contentArea.classList.remove('bg-white', 'text-gray-700');
+            contentArea.classList.add('bg-gray-700', 'text-white');
+            body.classList.remove('text-gray-700');
+            body.classList.add('text-white');
+            document.documentElement.style.setProperty('--bg-color', '#374151');
+            document.documentElement.style.setProperty('--text-color', '#ffffff');
+            document.documentElement.style.setProperty('--text-content-color', '#ffffff');
+            lightModeIcon.classList.remove('active');
+            darkModeIcon.classList.add('active');
+            systemModeIcon.classList.remove('active');
+        }
+
+        function setLightMode() {
+            body.classList.remove('dark');
+            fullBackground.classList.remove('bg-gray-800');
+            fullBackground.classList.add('bg-white');
+            contentArea.classList.remove('bg-gray-700', 'text-white');
+            contentArea.classList.add('bg-white', 'text-gray-700');
+            body.classList.remove('text-white');
+            body.classList.add('text-gray-700');
+            document.documentElement.style.setProperty('--bg-color', '#ffffff');
+            document.documentElement.style.setProperty('--text-color', '#4a5568');
+            document.documentElement.style.setProperty('--text-content-color', '#4a5568');
+            lightModeIcon.classList.add('active');
+            darkModeIcon.classList.remove('active');
+            systemModeIcon.classList.remove('active');
+        }
+
+        function setSystemMode() {
+            if (systemPrefersDark) {
+                setDarkMode();
+            } else {
+                setLightMode();
+            }
+            systemModeIcon.classList.add('active');
+        }
+
+        if (systemPrefersDark) {
+            setSystemMode();
+        } else {
+             setLightMode();
+        }
+
+        darkModeToggle.addEventListener('click', (event) => {
+            const clickedIcon = event.target;
+
+            if (clickedIcon.classList.contains('light-mode-icon')) {
+                setLightMode();
+            } else if (clickedIcon.classList.contains('dark-mode-icon')) {
+                setDarkMode();
+            } else if (clickedIcon.classList.contains('system-mode-icon')) {
+                setSystemMode();
+            }
+        });
+    </script>
+</body>
+</html>
