@@ -5,7 +5,7 @@
     <title>Prikshit Kumar</title>
     <link href="https://fonts.googleapis.com/css2?family=Titillium+Web:wght@400;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="shortcut icon" href="favicon.jpeg">
+    <link rel="shortcut icon" href="favicon.png">
     <style>
         :root {
             --bg-color: #ffffff;
@@ -42,16 +42,22 @@
         #theme-toggle:hover {
             opacity: 1;
         }
+        body.dark .logo {
+            filter: invert(1);
+        }
+        .sun-icon {
+            transform: scale(1.6);
+        }
     </style>
 </head>
 <body class="bg-gray-100 text-gray-700"> 
     <header class="fixed top-0 left-0 right-0 h-16 flex items-center bg-white/80 backdrop-blur-sm transition-colors duration-300 z-20" style="max-width: 800px; margin: 0 auto;">
         <div class="container mx-auto flex items-center justify-between relative">
             <div class="w-12"><!-- Spacer --></div>
-            <img src="logo.png" alt="Logo" class="absolute top-1/2 -translate-y-1/2 h-8 transition-colors duration-300"/>
+            <img src="logo.png" alt="Logo" class="absolute top-1/2 -translate-y-1/2 h-12 transition-colors duration-300 logo"/>
             <button id="theme-toggle" class="p-2 rounded-full">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <circle cx="12" cy="12" r="4" class="dark:hidden"/>
+                    <circle cx="12" cy="12" r="4" class="dark:hidden moon-icon"/>
                     <path d="M12 8v1" class="dark:hidden"/>
                     <path d="M12 15v1" class="dark:hidden"/>
                     <path d="m17.7 7.7-1.4 1.4" class="dark:hidden"/>
@@ -60,7 +66,7 @@
                     <path d="m5 12h-1" class="dark:hidden"/>
                     <path d="m16.3 16.3-1.4-1.4" class="dark:hidden"/>
                     <path d="m7.7 16.3 1.4-1.4" class="dark:hidden"/>
-                    <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" class="hidden dark:block"/>
+                    <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" class="hidden dark:block sun-icon"/>
                 </svg>
             </button>
         </div>
