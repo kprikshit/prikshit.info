@@ -1,230 +1,139 @@
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Prikshit Kumar</title>
-    <link href="https://fonts.googleapis.com/css2?family=Titillium+Web:wght@400;600;700&display=swap" rel="stylesheet">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="shortcut icon" href="favicon.png">
+    <title>Prikshit Kumar - Software Developer</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        :root {
-            --bg-color: #ffffff;
-            --text-color: #4a5568;
-            --text-content-color: #4a5568;
-        }
+        @import url('https://fonts.googleapis.com/css2?family=Titillium+Web:wght@400;700&display=swap');
+
         body {
             font-family: 'Titillium Web', sans-serif;
-            font-size: 20px;
-        }
-        .full-background {
-            min-height: 100vh;
+            font-size: 1.2em; /* Further increased base font size */
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            background-color: #f8f8f8; /* Lighter gray/almost white background */
+            color: #1a1a1a; /* Dark gray/black text */
             display: flex;
-            justify-content: center;
-            align-items: flex-start;
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            transition: background-color 0.3s ease, color 0.3s ease;
+            flex-direction: column; /* Stack items vertically */
+            justify-content: flex-start; /* Align items to the top */
+            align-items: center;
+            min-height: 100vh;
+            padding-top: 50px; /* Add padding to move content down slightly from the very top */
         }
-        .content-area {
-            width: 100%;
-            max-width: 800px;
-            margin-top: 2rem;
-            color: var(--text-content-color);
-            transition: color 0.3s ease;
-            padding: 1rem;
-        }
+
         #theme-toggle {
-            width: 36px;
-                height: 36px;
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: none;
+            border: none;
+            font-size: 1em; /* Further reduced icon size */
             cursor: pointer;
-            opacity: 0.7;
-            transition: opacity 0.3s ease;
+            color: #1a1a1a; /* Default icon color */
         }
-        #theme-toggle:hover {
-            opacity: 1;
+
+        .container {
+            text-align: center;
+            /* Removed background, padding, border-radius, and box-shadow for a single background */
+            max-width: 600px;
+            width: 100%;
         }
-        body.dark .logo {
-            filter: invert(1);
+
+        h1 {
+            color: #333; /* Dark gray for heading */
+            margin-bottom: 15px; /* Increased margin */
+            font-size: 3em; /* Further increased heading font size */
         }
-        .sun-icon {
-            transform: scale(1.6);
+
+        p {
+            margin-bottom: 20px;
+        }
+
+        .subtitle {
+            font-size: 1.5em; /* Increased font size for subtitle */
+            margin-bottom: 5px; /* Reduced margin below subtitle */
+        }
+
+        .social-links a {
+            margin: 0 10px;
+            color: #1a1a1a; /* Dark gray/black for links */
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 1.5em; /* Reduced social icon size */
+        }
+
+        .social-links a:hover {
+            text-decoration: underline;
+        }
+
+        /* Night mode styles */
+        body.night-mode {
+            background-color: #1a1a1a; /* Dark background */
+            color: #f8f8f8; /* Light text */
+        }
+
+        body.night-mode h1 {
+            color: #f8f8f8; /* Light heading color */
+        }
+
+        body.night-mode .social-links a {
+            color: #f8f8f8; /* Light link color */
+        }
+
+        body.night-mode #theme-toggle {
+            color: #f8f8f8; /* Light icon color */
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                /* Padding removed for single background */
+            }
+
+            .social-links a {
+                display: block;
+                margin: 10px 0;
+            }
         }
     </style>
 </head>
-<body class="bg-gray-100 text-gray-700"> 
-    <header class="fixed top-0 left-0 right-0 h-16 flex items-center bg-white/80 backdrop-blur-sm transition-colors duration-300 z-20" style="max-width: 800px; margin: 0 auto; padding: 0.5rem;">
-        <div class="container mx-auto flex items-center justify-between relative">
-            <div class="w-12"><!-- Spacer --></div>
-            <img src="logo.png" alt="Logo" class="absolute top-1/2 -translate-y-1/2 h-12 transition-colors duration-300 logo"/>
-            <button id="theme-toggle" class="p-2 rounded-full">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <circle cx="12" cy="12" r="4" class="dark:hidden moon-icon"/>
-                    <path d="M12 8v1" class="dark:hidden"/>
-                    <path d="M12 15v1" class="dark:hidden"/>
-                    <path d="m17.7 7.7-1.4 1.4" class="dark:hidden"/>
-                    <path d="m7.7 7.7 1.4 1.4" class="dark:hidden"/>
-                    <path d="m20 12h-1" class="dark:hidden"/>
-                    <path d="m5 12h-1" class="dark:hidden"/>
-                    <path d="m16.3 16.3-1.4-1.4" class="dark:hidden"/>
-                    <path d="m7.7 16.3 1.4-1.4" class="dark:hidden"/>
-                    <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" class="hidden dark:block sun-icon"/>
-                </svg>
-            </button>
-        </div>
-    </header>
-    <div class="full-background bg-white">
-        <div class="content-area rounded-lg shadow-md p-8 text-center mt-20">
-            <div class="mb-6">
-                <h1 class="text-3xl font-semibold transition-colors duration-300">Prikshit Kumar</h1>
-                <p class="text-gray-500 transition-colors duration-300">Software Engineer</p>
-            </div>
-            <div class="mb-6">
-                <p class="text-gray-500 leading-relaxed transition-colors duration-300">
-                    Passionate about solving real world problems and learning new technologies.
-                </p>
-            </div>
-            <div class="mb-4 space-x-4">
-                <a href="https://www.linkedin.com/in/kprikshit" target="_blank" rel="noopener noreferrer" class="inline-flex items-center justify-center w-10 h-10 bg-gray-800 hover:bg-gray-700 text-white rounded-full transition duration-300 ease-in-out">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.32 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.79M6.88 8.56a1.68 1.68 0 0 0 1.68-1.68c0-.93-.75-1.69-1.68-1.69a1.69 1.69 0 0 0-1.69 1.69c0 .93.76 1.68 1.69 1.68m1.39 9.94v-8.37H5.5v8.37h2.77z"/>
-                    </svg>
-                </a>
-                <a href="https://github.com/kprikshit" target="_blank" rel="noopener noreferrer" class="inline-flex items-center justify-center w-10 h-10 bg-gray-800 hover:bg-gray-700 text-white rounded-full transition duration-300 ease-in-out">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M12 2C6.477 2 2 6.477 2 12c0 4.42 2.865 8.17 6.839 9.49.5.092.682-.217.682-.482 0-.237-.008-.866-.013-1.7-2.782.604-3.369-1.341-3.369-1.341-.454-1.155-1.11-1.462-1.11-1.462-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.087 2.91.831.092-.647.35-1.087.636-1.337-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.029-2.683-.103-.253-.446-1.27.098-2.647 0 0 .84-.269 2.75 1.025A9.578 9.578 0 0112 6.836c.85.004 1.705.114 2.504.336 1.909-1.294 2.747-1.025 2.747-1.025.546 1.377.203 2.394.1 2.647.64.699 1.028 1.592 1.028 2.683 0 3.842-2.339 4.687-4.566 4.935.359.309.678.919.678 1.852 0 1.336-.012 2.415-.012 2.743 0 .267.18.578.688.48C19.138 20.167 22 16.418 22 12c0-5.523-4.477-10-10-10z"/>
-                    </svg>
-                </a>
-            </div>
+<body>
+    <button id="theme-toggle" aria-label="Toggle theme">
+        <i class="fas fa-sun"></i>
+    </button>
+    <div class="container">
+        <h1>Prikshit Kumar</h1>
+        <p class="subtitle">Software Engineer</p>
+        <p>Innovating with technology to solve real-world challenges</p>
+        <div class="social-links">
+            <a href="https://github.com/kprikshit" target="_blank" aria-label="GitHub">
+                <i class="fab fa-github"></i>
+            </a>
+            <a href="https://linkedin.com/in/kprikshit" target="_blank" aria-label="LinkedIn">
+                <i class="fab fa-linkedin-in"></i>
+            </a>
         </div>
     </div>
     <script>
-        const themeToggle = document.getElementById('theme-toggle');
-        const body = document.body;
-        const fullBackground = document.querySelector('.full-background');
-        const contentArea = document.querySelector('.content-area');
-
-        // Add system theme detection
-        const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-
-        function setDarkMode() {
-            body.classList.add('dark');
-            fullBackground.classList.remove('bg-white');
-            fullBackground.classList.add('bg-gray-800');
-            contentArea.classList.remove('bg-white', 'text-gray-700');
-            contentArea.classList.add('bg-gray-700', 'text-white');
-            body.classList.remove('text-gray-700');
-            body.classList.add('text-white');
-            document.documentElement.style.setProperty('--bg-color', '#374151');
-            document.documentElement.style.setProperty('--text-color', '#ffffff');
-            document.documentElement.style.setProperty('--text-content-color', '#ffffff');
-
-            const h1 = document.querySelector('h1');
-            if (h1) {
-                h1.classList.remove('text-gray-800');
-                h1.classList.add('text-white');
-            }
-
-            const h1_p = document.querySelector('h1 + p');
-            if (h1_p) {
-                h1_p.classList.remove('text-gray-600');
-                h1_p.classList.add('text-gray-300');
-            }
-
-            const leadingRelaxed = document.querySelector('.leading-relaxed');
-            if (leadingRelaxed) {
-                leadingRelaxed.classList.remove('text-gray-500');
-                leadingRelaxed.classList.add('text-gray-300');
-            }
-
-            const header = document.querySelector('header');
-            if (header) {
-                header.classList.remove('bg-white/80');
-                header.classList.add('bg-gray-800/80');
-            }
-            document.documentElement.classList.add('dark');
-            themeToggle.innerHTML = `
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" class=""/>
-                </svg>
-            `;
+        // Check for system preference on page load
+        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            document.body.classList.add('night-mode');
+            document.getElementById('theme-toggle').querySelector('i').classList.remove('fa-sun');
+            document.getElementById('theme-toggle').querySelector('i').classList.add('fa-moon');
         }
 
-        function setLightMode() {
-            body.classList.remove('dark');
-            fullBackground.classList.remove('bg-gray-800');
-            fullBackground.classList.add('bg-white');
-            contentArea.classList.remove('bg-gray-700', 'text-white');
-            contentArea.classList.add('bg-white', 'text-gray-700');
-            body.classList.remove('text-white');
-            body.classList.add('text-gray-700');
-            document.documentElement.style.setProperty('--bg-color', '#ffffff');
-            document.documentElement.style.setProperty('--text-color', '#4a5568');
-            document.documentElement.style.setProperty('--text-content-color', '#4a5568');
-
-            const h1 = document.querySelector('h1');
-            if (h1) {
-                h1.classList.remove('text-white');
-                h1.classList.add('text-gray-800');
-            }
-
-            const h1_p = document.querySelector('h1 + p');
-            if (h1_p) {
-                h1_p.classList.remove('text-gray-300');
-                h1_p.classList.add('text-gray-600');
-            }
-
-            const leadingRelaxed = document.querySelector('.leading-relaxed');
-            if (leadingRelaxed) {
-                leadingRelaxed.classList.remove('text-gray-300');
-                leadingRelaxed.classList.add('text-gray-500');
-            }
-
-            const header = document.querySelector('header');
-            if (header) {
-                header.classList.remove('bg-gray-800/80');
-                header.classList.add('bg-white/80');
-            }
-            document.documentElement.classList.remove('dark');
-            themeToggle.innerHTML = `
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <circle cx="12" cy="12" r="4" class=""/>
-                    <path d="M12 8v1" class=""/>
-                    <path d="M12 15v1" class=""/>
-                    <path d="m17.7 7.7-1.4 1.4" class=""/>
-                    <path d="m7.7 7.7 1.4 1.4" class=""/>
-                    <path d="m20 12h-1" class=""/>
-                    <path d="m5 12h-1" class=""/>
-                    <path d="m16.3 16.3-1.4-1.4" class=""/>
-                    <path d="m7.7 16.3 1.4-1.4" class=""/>
-                </svg>
-            `;
-        }
-
-        document.addEventListener('DOMContentLoaded', () => {
-            // Set initial theme based on system preference
-            if (systemPrefersDark) {
-                setDarkMode();
+        document.getElementById('theme-toggle').addEventListener('click', function() {
+            document.body.classList.toggle('night-mode');
+            const icon = this.querySelector('i');
+            if (document.body.classList.contains('night-mode')) {
+                icon.classList.remove('fa-sun');
+                icon.classList.add('fa-moon');
             } else {
-                setLightMode();
+                icon.classList.remove('fa-moon');
+                icon.classList.add('fa-sun');
             }
-
-            // Listen for system theme changes
-            window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
-                if (e.matches) {
-                    setDarkMode();
-                } else {
-                    setLightMode();
-                }
-            });
-
-            // Theme toggle click handler
-            themeToggle.addEventListener('click', () => {
-                if (body.classList.contains('dark')) {
-                    setLightMode();
-                } else {
-                    setDarkMode();
-                }
-            });
         });
     </script>
 </body>
