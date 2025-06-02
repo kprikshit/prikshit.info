@@ -71,6 +71,9 @@
             font-size: 3.2em; /* Slightly increased heading font size */
             letter-spacing: -0.02em; /* Subtle letter spacing */
             transition: color var(--transition-speed) ease;
+            opacity: 0; /* Start invisible for animation */
+            animation: fadeInSlideUp 0.8s ease-out forwards; /* Apply animation */
+            animation-delay: 0.2s; /* Delay for h1 */
         }
 
         p {
@@ -82,6 +85,9 @@
             font-size: 1.6em; /* Slightly increased font size for subtitle */
             margin-bottom: 10px; /* Adjusted margin below subtitle */
             font-weight: 400; /* Ensure it's not too bold */
+            opacity: 0; /* Start invisible for animation */
+            animation: fadeInSlideUp 0.8s ease-out forwards; /* Apply animation */
+            animation-delay: 0.4s; /* Delay for subtitle */
         }
 
         .social-links {
@@ -162,6 +168,18 @@
             50% { border-color: var(--dark-text); } /* Blinking effect for dark mode */
         }
 
+        /* New animation for elements appearing on load */
+        @keyframes fadeInSlideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
         @media (max-width: 600px) {
             body {
                 padding: 15px;
@@ -197,7 +215,7 @@
     <main class="container"> <!-- Changed div to main for semantic HTML -->
         <h1>Prikshit Kumar</h1>
         <p class="subtitle">Software Engineer</p>
-        <p><span id="tagline-text"></span><span class="typing-cursor">|</span></p>
+        <p id="tagline-paragraph"><span id="tagline-text"></span><span class="typing-cursor">|</span></p>
         <div class="social-links">
             <a href="https://github.com/kprikshit" target="_blank" rel="noopener noreferrer" aria-label="GitHub profile">
                 <i class="fab fa-github"></i>
@@ -247,9 +265,32 @@
 
         // Typewriter effect for tagline
         const taglineTextElement = document.getElementById('tagline-text');
+        const taglineParagraph = document.getElementById('tagline-paragraph'); // Get the parent paragraph
         const tagline = "Engineering elegant software to solve complex, real-world problems.";
         let i = 0;
-        const typingSpeed = 50; // milliseconds per character
+        const typingSpeed = 25; // milliseconds per character
+
+        // Function to calculate and set the width of the tagline paragraph
+        function setTaglineWidth() {
+            // Create a temporary element to measure the full text width
+            const tempSpan = document.createElement('span');
+            tempSpan.style.visibility = 'hidden'; // Make it invisible
+            tempSpan.style.position = 'absolute'; // Take it out of flow
+            tempSpan.style.whiteSpace = 'nowrap'; // Prevent text wrapping
+            // Match font styles to ensure accurate width calculation
+            tempSpan.style.fontSize = window.getComputedStyle(taglineTextElement).fontSize;
+            tempSpan.style.fontFamily = window.getComputedStyle(taglineTextElement).fontFamily;
+            tempSpan.textContent = tagline; // Set the full text
+
+            document.body.appendChild(tempSpan); // Add to DOM to measure
+            const fullWidth = tempSpan.offsetWidth; // Get the width
+            document.body.removeChild(tempSpan); // Remove it
+
+            // Apply the calculated width to the tagline paragraph with a small buffer
+            taglineParagraph.style.width = `${fullWidth + 10}px`; // Added 10px buffer
+            taglineParagraph.style.display = 'inline-block'; // Make it inline-block so it can be centered by parent
+            taglineParagraph.style.textAlign = 'left'; // Ensure text inside is left-aligned
+        }
 
         function typeWriter() {
             if (i < tagline.length) {
@@ -261,7 +302,9 @@
 
         // Start the typewriter effect after a short delay on page load
         window.addEventListener('load', () => {
-            setTimeout(typeWriter, 500); // Delay before typing starts
+            setTaglineWidth(); // Calculate and set width before typing
+            // Start typewriter after name and subtitle animations have had time to play
+            setTimeout(typeWriter, 1200); // Delay before typing starts
         });
     </script>
 </body>
