@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Prikshit Kumar - Software Developer</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- Theme Color for Mobile Browsers -->
+    <meta name="theme-color" content="#f8f8f8">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Titillium+Web:wght@400;700&display=swap');
 
@@ -204,8 +206,6 @@
             #tagline-paragraph {
                 white-space: nowrap; /* Prevent wrapping on desktop */
                 display: inline-block; /* Change to inline-block for desktop to be centered by parent's text-align: center */
-                /* text-align: left; // Already set above, but good to keep in mind */
-                /* Width will be set by JavaScript */
             }
         }
 
@@ -264,6 +264,7 @@
         const themeToggle = document.getElementById('theme-toggle');
         const body = document.body;
         const icon = themeToggle.querySelector('i');
+        const themeColorMeta = document.querySelector('meta[name="theme-color"]'); // Get the theme-color meta tag
 
         // Function to set the theme and update localStorage
         function setTheme(theme) {
@@ -271,10 +272,18 @@
                 body.classList.add('night-mode');
                 icon.classList.remove('fa-sun');
                 icon.classList.add('fa-moon');
+                if (themeColorMeta) {
+                    // Use dark background color for theme-color in night mode
+                    themeColorMeta.setAttribute('content', getComputedStyle(document.documentElement).getPropertyValue('--dark-bg').trim());
+                }
             } else {
                 body.classList.remove('night-mode');
                 icon.classList.remove('fa-moon');
                 icon.classList.add('fa-sun');
+                if (themeColorMeta) {
+                    // Use light background color for theme-color in day mode
+                    themeColorMeta.setAttribute('content', getComputedStyle(document.documentElement).getPropertyValue('--light-bg').trim());
+                }
             }
             localStorage.setItem('theme', theme); // Store the chosen theme
         }
