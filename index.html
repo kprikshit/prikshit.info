@@ -35,14 +35,14 @@
             font-size: 1.15em; /* Slightly adjusted base font size */
             line-height: 1.7; /* Improved line height for readability */
             margin: 0;
-            padding: 0; /* Removed padding from body */
+            padding: 0; /* Default padding for body */
             background-color: var(--light-bg);
             color: var(--light-text);
             display: flex;
             flex-direction: column;
-            justify-content: center; /* Center content vertically */
-            align-items: center;
-            min-height: 100vh;
+            justify-content: center; /* Center content vertically on desktop */
+            align-items: center; /* Center content horizontally on desktop */
+            min-height: 100vh; /* Ensure body takes full viewport height */
             transition: background-color var(--transition-speed) ease, color var(--transition-speed) ease;
         }
 
@@ -67,10 +67,10 @@
         }
 
         .container {
-            text-align: center;
-            max-width: 650px; /* Slightly increased max-width */
+            text-align: center; /* Centers inline-block children like #tagline-paragraph on desktop */
+            max-width: 650px;
             width: 100%;
-            padding: 20px; /* Add some internal padding */
+            padding: 20px; /* Internal padding for the container */
         }
 
         h1 {
@@ -87,10 +87,8 @@
         p {
             margin-bottom: 15px; /* Adjusted margin */
             transition: color var(--transition-speed) ease;
-            /* Default for mobile: allow wrapping, width auto, centered by parent */
-            white-space: normal;
+            white-space: normal; /* Default for mobile: allow wrapping */
             width: auto; /* Will be overridden by JS on desktop */
-            text-align: center; /* Center text within the paragraph on mobile */
         }
 
         .subtitle {
@@ -107,18 +105,18 @@
         }
 
         .social-links a {
-            margin: 0 15px; /* Increased spacing between icons */
+            margin: 0 15px;
             color: var(--light-text);
             text-decoration: none;
-            font-size: 1.8em; /* Increased social icon size */
-            display: inline-block; /* Allows transform */
+            font-size: 1.8em;
+            display: inline-block;
             transition: color var(--transition-speed) ease, transform 0.2s ease;
             cursor: pointer;
         }
 
         .social-links a:hover {
-            transform: translateY(-3px); /* Subtle lift effect */
-            color: var(--accent-color-light); /* Accent color on hover */
+            transform: translateY(-3px);
+            color: var(--accent-color-light);
         }
 
         /* Modern focus styling for accessibility */
@@ -143,7 +141,7 @@
         }
 
         body.night-mode .social-links a:hover {
-            color: var(--accent-color-dark); /* Accent color for dark mode hover */
+            color: var(--accent-color-dark);
         }
 
         body.night-mode #theme-toggle {
@@ -162,8 +160,8 @@
         .typing-cursor {
             display: inline-block;
             animation: blink-caret 0.75s step-end infinite;
-            font-weight: normal; /* Ensure cursor doesn't inherit bold from tagline */
-            color: var(--light-text); /* Ensure cursor color matches text */
+            font-weight: normal;
+            color: var(--light-text);
         }
 
         body.night-mode .typing-cursor {
@@ -173,11 +171,11 @@
         /* The typing effect */
         @keyframes blink-caret {
             from, to { border-color: transparent }
-            50% { border-color: var(--light-text); } /* Blinking effect */
+            50% { border-color: var(--light-text); }
         }
         body.night-mode @keyframes blink-caret {
             from, to { border-color: transparent }
-            50% { border-color: var(--dark-text); } /* Blinking effect for dark mode */
+            50% { border-color: var(--dark-text); }
         }
 
         /* New animation for elements appearing on load */
@@ -194,25 +192,34 @@
 
         /* Specific styles for the tagline paragraph */
         #tagline-paragraph {
-            display: inline-block; /* Essential for centering the block itself within text-align: center parent */
+            display: block; /* Default to block for mobile */
+            text-align: left; /* Ensure text is left-aligned within the paragraph */
+            margin-left: auto; /* Auto margins to center a block element */
+            margin-right: auto; /* Auto margins to center a block element */
+            max-width: 100%; /* Ensure it doesn't overflow its parent on mobile */
         }
 
         /* Media query for desktop-specific tagline behavior */
         @media (min-width: 768px) { /* Adjust this breakpoint as needed */
             #tagline-paragraph {
                 white-space: nowrap; /* Prevent wrapping on desktop */
-                text-align: left; /* Align text to left within its fixed width container */
+                display: inline-block; /* Change to inline-block for desktop to be centered by parent's text-align: center */
+                /* text-align: left; // Already set above, but good to keep in mind */
                 /* Width will be set by JavaScript */
             }
         }
 
+        /* Mobile-specific styles */
         @media (max-width: 600px) {
             body {
-                justify-content: flex-start; /* Align to top on small screens */
-                /* Removed padding-top: 80px; */
+                justify-content: flex-start; /* Align content to top on small screens */
+                align-items: center; /* Keep horizontal centering for the container */
+                padding-top: 80px; /* Add padding to body itself for top spacing */
+                padding-bottom: 20px; /* Add some padding at the bottom for consistency */
             }
             .container {
-                margin-top: 80px; /* Add margin to push content down on mobile */
+                margin-top: 0; /* Remove margin-top from container on mobile */
+                margin-bottom: 0; /* Remove margin-bottom from container on mobile */
             }
 
             #theme-toggle {
