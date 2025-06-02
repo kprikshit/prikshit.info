@@ -215,7 +215,7 @@
     <main class="container"> <!-- Changed div to main for semantic HTML -->
         <h1>Prikshit Kumar</h1>
         <p class="subtitle">Software Engineer</p>
-        <p id="tagline-paragraph"><span id="tagline-text"></span><span class="typing-cursor">|</span></p>
+        <p id="tagline-paragraph"><span id="tagline-text"></span><span id="typing-cursor" class="typing-cursor">|</span></p>
         <div class="social-links">
             <a href="https://github.com/kprikshit" target="_blank" rel="noopener noreferrer" aria-label="GitHub profile">
                 <i class="fab fa-github"></i>
@@ -266,6 +266,7 @@
         // Typewriter effect for tagline
         const taglineTextElement = document.getElementById('tagline-text');
         const taglineParagraph = document.getElementById('tagline-paragraph'); // Get the parent paragraph
+        const typingCursor = document.getElementById('typing-cursor'); // Get the cursor element
         const tagline = "Engineering elegant software to solve complex, real-world problems.";
         let i = 0;
         const typingSpeed = 25; // milliseconds per character
@@ -297,6 +298,9 @@
                 taglineTextElement.innerHTML += tagline.charAt(i);
                 i++;
                 setTimeout(typeWriter, typingSpeed);
+            } else {
+                // Typing is complete, hide the cursor completely
+                typingCursor.style.display = 'none';
             }
         }
 
