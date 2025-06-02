@@ -8,93 +8,162 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Titillium+Web:wght@400;700&display=swap');
 
+        /* CSS Variables for easier theme management */
+        :root {
+            --light-bg: #f8f8f8;
+            --light-text: #1a1a1a;
+            --light-heading: #333;
+            --accent-color-light: #007bff; /* A common accent blue */
+            --dark-bg: #1a1a1a;
+            --dark-text: #f8f8f8;
+            --dark-heading: #f8f8f8;
+            --accent-color-dark: #8ab4f8; /* A light blue accent for dark mode */
+            --transition-speed: 0.3s;
+        }
+
         body {
             font-family: 'Titillium Web', sans-serif;
-            font-size: 1.2em; /* Further increased base font size */
-            line-height: 1.6;
+            font-size: 1.15em; /* Slightly adjusted base font size */
+            line-height: 1.7; /* Improved line height for readability */
             margin: 0;
             padding: 20px;
-            background-color: #f8f8f8; /* Lighter gray/almost white background */
-            color: #1a1a1a; /* Dark gray/black text */
+            background-color: var(--light-bg);
+            color: var(--light-text);
             display: flex;
-            flex-direction: column; /* Stack items vertically */
-            justify-content: flex-start; /* Align items to the top */
+            flex-direction: column;
+            justify-content: center; /* Center content vertically */
             align-items: center;
             min-height: 100vh;
-            padding-top: 50px; /* Add padding to move content down slightly from the very top */
+            transition: background-color var(--transition-speed) ease, color var(--transition-speed) ease;
+            box-sizing: border-box; /* Include padding in element's total width and height */
         }
 
         #theme-toggle {
             position: absolute;
-            top: 20px;
-            right: 20px;
+            top: 25px; /* Slightly adjusted position */
+            right: 25px; /* Slightly adjusted position */
             background: none;
             border: none;
-            font-size: 1em; /* Further reduced icon size */
+            font-size: 1.2em; /* Slightly increased icon size for better tap target */
             cursor: pointer;
-            color: #1a1a1a; /* Default icon color */
+            color: var(--light-text);
+            transition: color var(--transition-speed) ease;
+            padding: 5px; /* Add padding for easier clicking */
+            border-radius: 5px; /* Subtle rounded corners */
+        }
+
+        /* Modern focus styling for accessibility */
+        #theme-toggle:focus-visible {
+            outline: 2px solid var(--light-text);
+            outline-offset: 2px;
         }
 
         .container {
             text-align: center;
-            /* Removed background, padding, border-radius, and box-shadow for a single background */
-            max-width: 600px;
+            max-width: 650px; /* Slightly increased max-width */
             width: 100%;
+            padding: 20px; /* Add some internal padding */
         }
 
         h1 {
-            color: #333; /* Dark gray for heading */
-            margin-bottom: 15px; /* Increased margin */
-            font-size: 3em; /* Further increased heading font size */
+            color: var(--light-heading);
+            margin-bottom: 10px; /* Adjusted margin */
+            font-size: 3.2em; /* Slightly increased heading font size */
+            letter-spacing: -0.02em; /* Subtle letter spacing */
+            transition: color var(--transition-speed) ease;
         }
 
         p {
-            margin-bottom: 20px;
+            margin-bottom: 15px; /* Adjusted margin */
+            transition: color var(--transition-speed) ease;
         }
 
         .subtitle {
-            font-size: 1.5em; /* Increased font size for subtitle */
-            margin-bottom: 5px; /* Reduced margin below subtitle */
+            font-size: 1.6em; /* Slightly increased font size for subtitle */
+            margin-bottom: 10px; /* Adjusted margin below subtitle */
+            font-weight: 400; /* Ensure it's not too bold */
+        }
+
+        .social-links {
+            margin-top: 25px; /* Increased margin above social links */
         }
 
         .social-links a {
-            margin: 0 10px;
-            color: #1a1a1a; /* Dark gray/black for links */
+            margin: 0 15px; /* Increased spacing between icons */
+            color: var(--light-text);
             text-decoration: none;
-            font-weight: bold;
-            font-size: 1.5em; /* Reduced social icon size */
+            font-size: 1.8em; /* Increased social icon size */
+            display: inline-block; /* Allows transform */
+            transition: color var(--transition-speed) ease, transform 0.2s ease;
+            cursor: pointer;
         }
 
         .social-links a:hover {
-            text-decoration: underline;
+            transform: translateY(-3px); /* Subtle lift effect */
+            color: var(--accent-color-light); /* Accent color on hover */
+        }
+
+        /* Modern focus styling for accessibility */
+        .social-links a:focus-visible {
+            outline: 2px solid var(--light-text);
+            outline-offset: 2px;
+            border-radius: 3px;
         }
 
         /* Night mode styles */
         body.night-mode {
-            background-color: #1a1a1a; /* Dark background */
-            color: #f8f8f8; /* Light text */
+            background-color: var(--dark-bg);
+            color: var(--dark-text);
         }
 
         body.night-mode h1 {
-            color: #f8f8f8; /* Light heading color */
+            color: var(--dark-heading);
         }
 
         body.night-mode .social-links a {
-            color: #f8f8f8; /* Light link color */
+            color: var(--dark-text);
+        }
+
+        body.night-mode .social-links a:hover {
+            color: var(--accent-color-dark); /* Accent color for dark mode hover */
         }
 
         body.night-mode #theme-toggle {
-            color: #f8f8f8; /* Light icon color */
+            color: var(--dark-text);
+        }
+
+        body.night-mode #theme-toggle:focus-visible {
+            outline: 2px solid var(--dark-text);
+        }
+
+        body.night-mode .social-links a:focus-visible {
+            outline: 2px solid var(--dark-text);
         }
 
         @media (max-width: 600px) {
-            .container {
-                /* Padding removed for single background */
+            body {
+                padding: 15px;
+                justify-content: flex-start; /* Align to top on small screens */
+                padding-top: 80px; /* Make space for toggle */
+            }
+
+            #theme-toggle {
+                top: 20px;
+                right: 20px;
+                font-size: 1.1em;
+            }
+
+            h1 {
+                font-size: 2.5em;
+            }
+
+            .subtitle {
+                font-size: 1.3em;
             }
 
             .social-links a {
-                display: block;
-                margin: 10px 0;
+                margin: 0 10px;
+                font-size: 1.6em;
             }
         }
     </style>
@@ -103,36 +172,54 @@
     <button id="theme-toggle" aria-label="Toggle theme">
         <i class="fas fa-sun"></i>
     </button>
-    <div class="container">
+    <main class="container"> <!-- Changed div to main for semantic HTML -->
         <h1>Prikshit Kumar</h1>
         <p class="subtitle">Software Engineer</p>
         <p>Innovating with technology to solve real-world challenges</p>
         <div class="social-links">
-            <a href="https://github.com/kprikshit" target="_blank" aria-label="GitHub">
+            <a href="https://github.com/kprikshit" target="_blank" rel="noopener noreferrer" aria-label="GitHub profile">
                 <i class="fab fa-github"></i>
             </a>
-            <a href="https://linkedin.com/in/kprikshit" target="_blank" aria-label="LinkedIn">
+            <a href="https://linkedin.com/in/kprikshit" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn profile">
                 <i class="fab fa-linkedin-in"></i>
             </a>
         </div>
-    </div>
+    </main>
     <script>
-        // Check for system preference on page load
-        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-            document.body.classList.add('night-mode');
-            document.getElementById('theme-toggle').querySelector('i').classList.remove('fa-sun');
-            document.getElementById('theme-toggle').querySelector('i').classList.add('fa-moon');
-        }
+        const themeToggle = document.getElementById('theme-toggle');
+        const body = document.body;
+        const icon = themeToggle.querySelector('i');
 
-        document.getElementById('theme-toggle').addEventListener('click', function() {
-            document.body.classList.toggle('night-mode');
-            const icon = this.querySelector('i');
-            if (document.body.classList.contains('night-mode')) {
+        // Function to set the theme and update localStorage
+        function setTheme(theme) {
+            if (theme === 'night-mode') {
+                body.classList.add('night-mode');
                 icon.classList.remove('fa-sun');
                 icon.classList.add('fa-moon');
             } else {
+                body.classList.remove('night-mode');
                 icon.classList.remove('fa-moon');
                 icon.classList.add('fa-sun');
+            }
+            localStorage.setItem('theme', theme); // Store the chosen theme
+        }
+
+        // On page load: check localStorage first, then system preference
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme) {
+            setTheme(savedTheme);
+        } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            setTheme('night-mode'); // Apply dark mode if system preference is dark
+        } else {
+            setTheme('day-mode'); // Default to day mode if no preference is found
+        }
+
+        // Event listener for theme toggle button
+        themeToggle.addEventListener('click', function() {
+            if (body.classList.contains('night-mode')) {
+                setTheme('day-mode');
+            } else {
+                setTheme('night-mode');
             }
         });
     </script>
