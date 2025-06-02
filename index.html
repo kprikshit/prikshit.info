@@ -8,6 +8,15 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Titillium+Web:wght@400;700&display=swap');
 
+        /* Universal box-sizing for consistent layout */
+        *, *::before, *::after {
+            box-sizing: border-box;
+        }
+
+        html {
+            overflow-x: hidden; /* Prevent horizontal scroll */
+        }
+
         /* CSS Variables for easier theme management */
         :root {
             --light-bg: #f8f8f8;
@@ -26,7 +35,7 @@
             font-size: 1.15em; /* Slightly adjusted base font size */
             line-height: 1.7; /* Improved line height for readability */
             margin: 0;
-            padding: 20px;
+            padding: 0; /* Removed padding from body */
             background-color: var(--light-bg);
             color: var(--light-text);
             display: flex;
@@ -35,7 +44,7 @@
             align-items: center;
             min-height: 100vh;
             transition: background-color var(--transition-speed) ease, color var(--transition-speed) ease;
-            box-sizing: border-box; /* Include padding in element's total width and height */
+            /* box-sizing: border-box; // Redundant due to universal selector */
         }
 
         #theme-toggle {
@@ -79,6 +88,10 @@
         p {
             margin-bottom: 15px; /* Adjusted margin */
             transition: color var(--transition-speed) ease;
+            /* Default for mobile: allow wrapping, width auto, centered by parent */
+            white-space: normal;
+            width: auto; /* Will be overridden by JS on desktop */
+            text-align: center; /* Center text within the paragraph on mobile */
         }
 
         .subtitle {
@@ -180,9 +193,23 @@
             }
         }
 
+        /* Specific styles for the tagline paragraph */
+        #tagline-paragraph {
+            display: inline-block; /* Essential for centering the block itself within text-align: center parent */
+        }
+
+        /* Media query for desktop-specific tagline behavior */
+        @media (min-width: 768px) { /* Adjust this breakpoint as needed */
+            #tagline-paragraph {
+                white-space: nowrap; /* Prevent wrapping on desktop */
+                text-align: left; /* Align text to left within its fixed width container */
+                /* Width will be set by JavaScript */
+            }
+        }
+
         @media (max-width: 600px) {
             body {
-                padding: 15px;
+                /* Removed padding: 15px; */
                 justify-content: flex-start; /* Align to top on small screens */
                 padding-top: 80px; /* Make space for toggle */
             }
@@ -271,26 +298,33 @@
         let i = 0;
         const typingSpeed = 25; // milliseconds per character
 
-        // Function to calculate and set the width of the tagline paragraph
-        function setTaglineWidth() {
-            // Create a temporary element to measure the full text width
-            const tempSpan = document.createElement('span');
-            tempSpan.style.visibility = 'hidden'; // Make it invisible
-            tempSpan.style.position = 'absolute'; // Take it out of flow
-            tempSpan.style.whiteSpace = 'nowrap'; // Prevent text wrapping
-            // Match font styles to ensure accurate width calculation
-            tempSpan.style.fontSize = window.getComputedStyle(taglineTextElement).fontSize;
-            tempSpan.style.fontFamily = window.getComputedStyle(taglineTextElement).fontFamily;
-            tempSpan.textContent = tagline; // Set the full text
+        // Function to calculate and set the width of the tagline paragraph based on screen size
+        function applyTaglineLayout() {
+            // Check if we are on a "desktop" screen based on the media query
+            // This media query should match the one in your CSS for #tagline-paragraph
+            const isDesktop = window.matchMedia('(min-width: 768px)').matches;
 
-            document.body.appendChild(tempSpan); // Add to DOM to measure
-            const fullWidth = tempSpan.offsetWidth; // Get the width
-            document.body.removeChild(tempSpan); // Remove it
+            if (isDesktop) {
+                // Create a temporary element to measure the full text width
+                const tempSpan = document.createElement('span');
+                tempSpan.style.visibility = 'hidden'; // Make it invisible
+                tempSpan.style.position = 'absolute'; // Take it out of flow
+                tempSpan.style.whiteSpace = 'nowrap'; // Ensure it measures as a single line
+                // Match font styles to ensure accurate width calculation
+                tempSpan.style.fontSize = window.getComputedStyle(taglineTextElement).fontSize;
+                tempSpan.style.fontFamily = window.getComputedStyle(taglineTextElement).fontFamily;
+                tempSpan.textContent = tagline; // Set the full text
 
-            // Apply the calculated width to the tagline paragraph with a small buffer
-            taglineParagraph.style.width = `${fullWidth + 10}px`; // Added 10px buffer
-            taglineParagraph.style.display = 'inline-block'; // Make it inline-block so it can be centered by parent
-            taglineParagraph.style.textAlign = 'left'; // Ensure text inside is left-aligned
+                document.body.appendChild(tempSpan); // Add to DOM to measure
+                const fullWidth = tempSpan.offsetWidth; // Get the width
+                document.body.removeChild(tempSpan); // Remove it
+
+                // Apply the calculated width to the tagline paragraph with a small buffer
+                taglineParagraph.style.width = `${fullWidth + 10}px`;
+            } else {
+                // On mobile, remove fixed width to allow wrapping
+                taglineParagraph.style.width = 'auto';
+            }
         }
 
         function typeWriter() {
@@ -304,12 +338,15 @@
             }
         }
 
-        // Start the typewriter effect after a short delay on page load
+        // Initial layout application on page load
         window.addEventListener('load', () => {
-            setTaglineWidth(); // Calculate and set width before typing
+            applyTaglineLayout(); // Set initial width based on screen size
             // Start typewriter after name and subtitle animations have had time to play
             setTimeout(typeWriter, 1200); // Delay before typing starts
         });
+
+        // Re-apply layout on window resize to handle orientation changes or responsive breakpoints
+        window.addEventListener('resize', applyTaglineLayout);
     </script>
 </body>
 </html>
