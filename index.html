@@ -140,6 +140,28 @@
             outline: 2px solid var(--dark-text);
         }
 
+        /* Typewriter effect styles */
+        .typing-cursor {
+            display: inline-block;
+            animation: blink-caret 0.75s step-end infinite;
+            font-weight: normal; /* Ensure cursor doesn't inherit bold from tagline */
+            color: var(--light-text); /* Ensure cursor color matches text */
+        }
+
+        body.night-mode .typing-cursor {
+            color: var(--dark-text);
+        }
+
+        /* The typing effect */
+        @keyframes blink-caret {
+            from, to { border-color: transparent }
+            50% { border-color: var(--light-text); } /* Blinking effect */
+        }
+        body.night-mode @keyframes blink-caret {
+            from, to { border-color: transparent }
+            50% { border-color: var(--dark-text); } /* Blinking effect for dark mode */
+        }
+
         @media (max-width: 600px) {
             body {
                 padding: 15px;
@@ -175,7 +197,7 @@
     <main class="container"> <!-- Changed div to main for semantic HTML -->
         <h1>Prikshit Kumar</h1>
         <p class="subtitle">Software Engineer</p>
-        <p>Innovating with technology to solve real-world challenges</p>
+        <p><span id="tagline-text"></span><span class="typing-cursor">|</span></p>
         <div class="social-links">
             <a href="https://github.com/kprikshit" target="_blank" rel="noopener noreferrer" aria-label="GitHub profile">
                 <i class="fab fa-github"></i>
@@ -221,6 +243,25 @@
             } else {
                 setTheme('night-mode');
             }
+        });
+
+        // Typewriter effect for tagline
+        const taglineTextElement = document.getElementById('tagline-text');
+        const tagline = "Engineering elegant software to solve complex, real-world problems.";
+        let i = 0;
+        const typingSpeed = 50; // milliseconds per character
+
+        function typeWriter() {
+            if (i < tagline.length) {
+                taglineTextElement.innerHTML += tagline.charAt(i);
+                i++;
+                setTimeout(typeWriter, typingSpeed);
+            }
+        }
+
+        // Start the typewriter effect after a short delay on page load
+        window.addEventListener('load', () => {
+            setTimeout(typeWriter, 500); // Delay before typing starts
         });
     </script>
 </body>
