@@ -112,6 +112,8 @@
         }
 
         h1 {
+            display: inline-block;
+            /* Shrink to fit text */
             color: var(--light-heading);
             margin-bottom: 10px;
             /* Adjusted margin */
@@ -139,6 +141,8 @@
         }
 
         .subtitle {
+            display: inline-block;
+            /* Shrink to fit text */
             font-size: 1.6em;
             /* Slightly increased font size for subtitle */
             margin-bottom: 10px;
@@ -434,6 +438,10 @@
             } else {
                 // Typing is complete, hide the cursor completely
                 typingCursor.style.display = 'none';
+                // Trigger shockwave to disperse particles
+                if (window.triggerTaglineShockwave) {
+                    window.triggerTaglineShockwave();
+                }
             }
         }
 

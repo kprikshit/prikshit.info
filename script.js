@@ -27,16 +27,24 @@ let mouse = {
 
 // Shockwave Class
 class Shockwave {
-    constructor(x, y) {
+    constructor(x, y, opts = null) {
         this.x = x;
         this.y = y;
         this.radius = 1;
-        // Variability: 90% small (15-30px), 10% big (50-80px)
-        const isBig = Math.random() < 0.1;
-        this.maxRadius = isBig ? 50 + Math.random() * 30 : 15 + Math.random() * 15;
+
+        if (opts) {
+            this.maxRadius = opts.maxRadius || 50;
+            this.speed = opts.speed || 3;
+            this.force = opts.force || 1;
+        } else {
+            // Variability: 90% small (15-30px), 10% big (50-80px)
+            const isBig = Math.random() < 0.1;
+            this.maxRadius = isBig ? 50 + Math.random() * 30 : 15 + Math.random() * 15;
+            this.speed = isBig ? 3 : 2;
+            this.force = isBig ? 1.5 : 0.5;
+        }
+
         this.alpha = 1;
-        this.speed = isBig ? 3 : 2;
-        this.force = isBig ? 1.5 : 0.5;
     }
 
     draw() {
@@ -53,6 +61,86 @@ class Shockwave {
         this.radius += this.speed;
         this.alpha -= 0.02; // Fade out
     }
+
+    interact(p) {
+        const dx = p.x - this.x;
+        const dy = p.y - this.y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+
+        // Push particles at the wavefront
+        if (dist < this.radius + 5 && dist > this.radius - 20) {
+            const angle = Math.atan2(dy, dx);
+            const force = this.force;
+            p.vx += Math.cos(angle) * force;
+            p.vy += Math.sin(angle) * force;
+        }
+    }
+}
+
+class RectangularShockwave {
+    constructor(rect, opts = null) {
+        this.rect = rect;
+        this.expansion = 0;
+        this.maxExpansion = opts && opts.maxRadius ? opts.maxRadius : 60;
+        this.speed = opts && opts.speed ? opts.speed : 3;
+        this.force = opts && opts.force ? opts.force : 2;
+        this.alpha = 1;
+        this.cornerRadius = 10;
+    }
+
+    draw() {
+        ctx.save();
+        ctx.beginPath();
+        const r = {
+            x: this.rect.left - this.expansion,
+            y: this.rect.top - this.expansion,
+            w: this.rect.width + this.expansion * 2,
+            h: this.rect.height + this.expansion * 2
+        };
+
+        ctx.strokeStyle = `rgba(0, 123, 255, ${this.alpha})`;
+        ctx.lineWidth = 2; // Thinner line
+        // Draw rounded rectangle
+        ctx.roundRect(r.x, r.y, r.w, r.h, this.cornerRadius + this.expansion);
+        ctx.stroke();
+        ctx.restore();
+    }
+
+    update() {
+        this.expansion += this.speed;
+        this.alpha -= 0.02;
+    }
+
+    interact(p) {
+        // Calculate closest point on the original rect
+        const closestX = Math.max(this.rect.left, Math.min(p.x, this.rect.right));
+        const closestY = Math.max(this.rect.top, Math.min(p.y, this.rect.bottom));
+
+        const dx = p.x - closestX;
+        const dy = p.y - closestY;
+        const distToRect = Math.sqrt(dx * dx + dy * dy);
+
+        // Push particles if they are near the expanding wavefront
+        if (Math.abs(distToRect - this.expansion) < 15) {
+            let nx, ny;
+            if (distToRect === 0) {
+                // Inside rect: push away from center
+                const cx = this.rect.left + this.rect.width / 2;
+                const cy = this.rect.top + this.rect.height / 2;
+                const cdx = p.x - cx;
+                const cdy = p.y - cy;
+                const cdist = Math.sqrt(cdx * cdx + cdy * cdy) || 1;
+                nx = cdx / cdist;
+                ny = cdy / cdist;
+            } else {
+                nx = dx / distToRect;
+                ny = dy / distToRect;
+            }
+
+            p.vx += nx * this.force;
+            p.vy += ny * this.force;
+        }
+    }
 }
 
 // Adjust canvas size and collision bounds on load and resize
@@ -65,73 +153,32 @@ function handleResize() {
 function updateCollisionZones() {
     collisionZones = [];
 
-    // Elements to extract text from
-    const textElements = [
+    // Elements to treat as boundaries
+    const elements = [
         document.querySelector('h1'),
         document.querySelector('.subtitle'),
-        document.getElementById('tagline-paragraph')
+        document.getElementById('tagline-text'), // Use the span to get exact text width
+        ...document.querySelectorAll('.social-links a')
     ];
 
-    // Helper to add a zone from a list of rects
-    const addZone = (rects) => {
-        if (rects.length === 0) return;
+    elements.forEach(el => {
+        if (!el) return;
+        const r = el.getBoundingClientRect();
 
-        // Calculate union bounding box for the zone (Broadphase)
-        let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
-        const validRects = [];
-
-        rects.forEach(r => {
-            // Filter out empty or invisible rects
-            if (r.width > 0 && r.height > 0) {
-                minX = Math.min(minX, r.left);
-                minY = Math.min(minY, r.top);
-                maxX = Math.max(maxX, r.right);
-                maxY = Math.max(maxY, r.bottom);
-                validRects.push({
-                    left: r.left, top: r.top, right: r.right, bottom: r.bottom,
-                    width: r.width, height: r.height
-                });
-            }
-        });
-
-        if (validRects.length > 0) {
+        // Filter out empty or invisible rects
+        if (r.width > 0 && r.height > 0) {
+            // Create a simple zone for the element's bounding box
             collisionZones.push({
                 bounds: {
-                    left: minX, top: minY, right: maxX, bottom: maxY,
-                    width: maxX - minX, height: maxY - minY
+                    left: r.left, top: r.top, right: r.right, bottom: r.bottom,
+                    width: r.width, height: r.height
                 },
-                children: validRects
+                children: [{ // Treat the whole box as the collision shape
+                    left: r.left, top: r.top, right: r.right, bottom: r.bottom,
+                    width: r.width, height: r.height
+                }]
             });
         }
-    };
-
-    // 1. Text Elements: Use Range to get per-character rects
-    textElements.forEach(el => {
-        if (!el) return;
-        const rects = [];
-        const range = document.createRange();
-        const walk = document.createTreeWalker(el, NodeFilter.SHOW_TEXT, null, false);
-        let node;
-        while (node = walk.nextNode()) {
-            const text = node.textContent;
-            for (let i = 0; i < text.length; i++) {
-                if (text[i].trim().length > 0) { // Ignore whitespace characters
-                    range.setStart(node, i);
-                    range.setEnd(node, i + 1);
-                    const clientRects = range.getClientRects();
-                    for (const r of clientRects) {
-                        rects.push(r);
-                    }
-                }
-            }
-        }
-        addZone(rects);
-    });
-
-    // 2. Social Icons: Treat each icon as a separate rect (or zone)
-    document.querySelectorAll('.social-links a').forEach(el => {
-        const rect = el.getBoundingClientRect();
-        addZone([rect]);
     });
 }
 
@@ -451,47 +498,82 @@ function handleParticleCollisions() {
 // Initialize particles
 function initParticles() {
     particles = [];
+
+    // Ensure zones are up to date
+    updateCollisionZones();
+    // Gather all exclusion rects with a small buffer
+    const forbiddenZones = collisionZones.map(z => ({
+        left: z.bounds.left - 10,
+        top: z.bounds.top - 10,
+        right: z.bounds.right + 10,
+        bottom: z.bounds.bottom + 10
+    }));
+
     for (let i = 0; i < numParticles; i++) {
-        let x = Math.random() * canvas.width;
-        let y = Math.random() * canvas.height;
+        let x, y, safe = false;
+        let attempts = 0;
+
+        while (!safe && attempts < 100) {
+            x = Math.random() * canvas.width;
+            y = Math.random() * canvas.height;
+            safe = true;
+
+            for (let r of forbiddenZones) {
+                if (x > r.left && x < r.right && y > r.top && y < r.bottom) {
+                    safe = false;
+                    break;
+                }
+            }
+            attempts++;
+        }
+
         particles.push(new Particle(x, y));
     }
 }
 
-function spawnGreenExplosionAround(rect) {
-    const centerX = rect.left + rect.width / 2;
-    const centerY = rect.top + rect.height / 2;
-
+// Context-aware spawn function: spawns on perimeter if 'target' is a Rect, or clusters if 'target' is a Point {x,y}
+function spawnGreenExplosion(target) {
     // Randomize count: 20 to 40
     const count = 20 + Math.floor(Math.random() * 21);
 
+    const isRect = (target.width !== undefined);
+
     for (let i = 0; i < count; i++) {
         if (tempParticles.length >= MAX_GREEN_PARTICLES) break;
-        let x, y, vx, vy;
-        const side = Math.floor(Math.random() * 4); // 0: Top, 1: Right, 2: Bottom, 3: Left
 
-        // Spawn on perimeter
-        switch (side) {
-            case 0: // Top
-                x = rect.left + Math.random() * rect.width;
-                y = rect.top - 5;
-                break;
-            case 1: // Right
-                x = rect.right + 5;
-                y = rect.top + Math.random() * rect.height;
-                break;
-            case 2: // Bottom
-                x = rect.left + Math.random() * rect.width;
-                y = rect.bottom + 5;
-                break;
-            case 3: // Left
-                x = rect.left - 5;
-                y = rect.top + Math.random() * rect.height;
-                break;
+        let x, y, vx, vy;
+
+        if (isRect) {
+            // Spawn on PERIMETER of the text/element
+            const side = Math.floor(Math.random() * 4); // 0: Top, 1: Right, 2: Bottom, 3: Left
+            switch (side) {
+                case 0: // Top
+                    x = target.left + Math.random() * target.width;
+                    y = target.top - 5;
+                    break;
+                case 1: // Right
+                    x = target.right + 5;
+                    y = target.top + Math.random() * target.height;
+                    break;
+                case 2: // Bottom
+                    x = target.left + Math.random() * target.width;
+                    y = target.bottom + 5;
+                    break;
+                case 3: // Left
+                    x = target.left - 5;
+                    y = target.top + Math.random() * target.height;
+                    break;
+            }
+        } else {
+            // Spawn in a small cluster around the POINT (click in void)
+            const angle = Math.random() * Math.PI * 2;
+            const radius = Math.random() * 10;
+            x = target.x + Math.cos(angle) * radius;
+            y = target.y + Math.sin(angle) * radius;
         }
 
         // Emit in all directions at medium pace
-        vx = (Math.random() - 0.5) * 6; // Medium speed, random direction
+        vx = (Math.random() - 0.5) * 6;
         vy = (Math.random() - 0.5) * 6;
 
         const p = new GreenParticle(x, y);
@@ -500,6 +582,8 @@ function spawnGreenExplosionAround(rect) {
         tempParticles.push(p);
     }
 }
+
+
 
 // Explosions for links
 function explodeParticles(x, y) {
@@ -541,19 +625,7 @@ function animate() {
 
         // Interaction: Shockwave pushes all particles
         const all = [...particles, ...tempParticles];
-        all.forEach(p => {
-            const dx = p.x - sw.x;
-            const dy = p.y - sw.y;
-            const dist = Math.sqrt(dx * dx + dy * dy);
-
-            // Push particles at the wavefront
-            if (dist < sw.radius + 5 && dist > sw.radius - 20) {
-                const angle = Math.atan2(dy, dx);
-                const force = sw.force;
-                p.vx += Math.cos(angle) * force;
-                p.vy += Math.sin(angle) * force;
-            }
-        });
+        all.forEach(p => sw.interact(p));
 
         if (sw.alpha <= 0) {
             shockwaves.splice(i, 1);
@@ -633,24 +705,55 @@ window.addEventListener('load', () => {
     initParticles();
     animate();
 
+    // Export function to trigger shockwave from external scripts (e.g. index.html)
+    window.triggerTaglineShockwave = function () {
+        const tagline = document.getElementById('tagline-paragraph');
+        if (tagline) {
+            const rect = tagline.getBoundingClientRect();
+            const centerX = rect.left + rect.width / 2;
+            const centerY = rect.top + rect.height / 2;
+            // Contained expansion (subtle)
+            // Use RectangularShockwave
+            shockwaves.push(new RectangularShockwave(rect, {
+                maxRadius: 25, // Contained expansion (subtle)
+                force: 2,
+                speed: 1 // Slower speed
+            }));
+        }
+    };
+
     const h1Element = document.querySelector('h1');
     if (h1Element) {
+        // Only set cursor style, remove specific listener
         h1Element.style.userSelect = 'none';
         h1Element.style.webkitUserSelect = 'none';
-        h1Element.style.cursor = 'pointer';
-
-        const isTouchDevice = window.matchMedia("(pointer: coarse)").matches;
-
-        if (isTouchDevice) {
-            h1Element.addEventListener('click', (e) => {
-                spawnGreenExplosionAround(h1Element.getBoundingClientRect());
-            });
-        } else {
-            h1Element.addEventListener('dblclick', (e) => {
-                spawnGreenExplosionAround(h1Element.getBoundingClientRect());
-            });
-        }
+        h1Element.style.cursor = 'default'; // No longer a special pointer target
     }
+
+    // Global Double Click to spawn green particles
+    window.addEventListener('dblclick', (e) => {
+        // Check if clicked on specific text elements
+        const h1 = document.querySelector('h1');
+        const sub = document.querySelector('.subtitle');
+        const tag = document.getElementById('tagline-paragraph');
+
+        let spawnedOnText = false;
+
+        [h1, sub, tag].forEach(el => {
+            if (el && !spawnedOnText) {
+                const rect = el.getBoundingClientRect();
+                if (e.clientX >= rect.left && e.clientX <= rect.right &&
+                    e.clientY >= rect.top && e.clientY <= rect.bottom) {
+                    spawnGreenExplosion(rect); // Spawn on perimeter
+                    spawnedOnText = true;
+                }
+            }
+        });
+
+        if (!spawnedOnText) {
+            spawnGreenExplosion({ x: e.clientX, y: e.clientY }); // Spawn on point
+        }
+    });
 
     // Disable selection for other text elements
     const unselectableElements = [
