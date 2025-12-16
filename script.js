@@ -306,7 +306,7 @@ class GreenParticle {
         this.vy = (Math.random() - 0.5) * 20;
         this.friction = 0.99;
         this.size = particleSize;
-        this.life = 3600 + Math.random() * 1800; // 60-90s
+        this.life = 900 + Math.random() * 2700; // 15-60s
         this.maxLife = this.life;
         this.color = '#90ee90';
         // removed markedForRemoval as random explosions are disabled
@@ -462,8 +462,8 @@ function spawnGreenExplosionAround(rect) {
     const centerX = rect.left + rect.width / 2;
     const centerY = rect.top + rect.height / 2;
 
-    // Randomize count: 1 to 20
-    const count = 1 + Math.floor(Math.random() * 20);
+    // Randomize count: 20 to 40
+    const count = 20 + Math.floor(Math.random() * 21);
 
     for (let i = 0; i < count; i++) {
         if (tempParticles.length >= MAX_GREEN_PARTICLES) break;
