@@ -86,7 +86,7 @@ class RectangularShockwave {
         this.maxExpansion = opts && opts.maxRadius ? opts.maxRadius : 60;
         this.speed = opts && opts.speed ? opts.speed : 3;
         this.force = opts && opts.force ? opts.force : 2;
-        this.alpha = 1;
+        this.alpha = 1.2;
         this.cornerRadius = 10;
     }
 
@@ -101,7 +101,10 @@ class RectangularShockwave {
         };
 
         ctx.strokeStyle = `rgba(0, 123, 255, ${this.alpha})`;
-        ctx.lineWidth = 2; // Thinner line
+        ctx.lineWidth = 3; // Thicker line
+        // Add glow effect
+        ctx.shadowColor = `rgba(0, 123, 255, ${this.alpha})`;
+        ctx.shadowBlur = 10;
         // Draw rounded rectangle
         ctx.roundRect(r.x, r.y, r.w, r.h, this.cornerRadius + this.expansion);
         ctx.stroke();
@@ -736,7 +739,7 @@ window.addEventListener('load', () => {
             // Contained expansion (subtle) around the name
             // Use RectangularShockwave
             shockwaves.push(new RectangularShockwave(rect, {
-                maxRadius: 30, // Slightly larger than tagline but still subtle relative to H1 size
+                maxRadius: 15, // Smaller size
                 force: 2,
                 speed: 1 // Slower speed
             }));

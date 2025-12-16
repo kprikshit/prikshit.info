@@ -264,9 +264,9 @@
         /* Specific styles for the tagline paragraph */
         #tagline-paragraph {
             display: block;
-            /* Default to block for mobile */
-            text-align: left;
-            /* Ensure text is left-aligned within the paragraph */
+            width: fit-content;
+            text-align: center;
+            /* Ensure text is centered */
             margin-left: auto;
             /* Auto margins to center a block element */
             margin-right: auto;
@@ -277,14 +277,7 @@
 
         /* Media query for desktop-specific tagline behavior */
         @media (min-width: 768px) {
-
             /* Adjust this breakpoint as needed */
-            #tagline-paragraph {
-                white-space: nowrap;
-                /* Prevent wrapping on desktop */
-                display: inline-block;
-                /* Change to inline-block for desktop to be centered by parent's text-align: center */
-            }
         }
 
         /* Mobile-specific styles */
