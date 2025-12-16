@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -14,12 +15,15 @@
         @import url('https://fonts.googleapis.com/css2?family=Titillium+Web:wght@400;700&display=swap');
 
         /* Universal box-sizing for consistent layout */
-        *, *::before, *::after {
+        *,
+        *::before,
+        *::after {
             box-sizing: border-box;
         }
 
         html {
-            overflow-x: hidden; /* Prevent horizontal scroll */
+            overflow: hidden;
+            /* Prevent scroll bars */
         }
 
         /* CSS Variables for easier theme management */
@@ -27,42 +31,55 @@
             --light-bg: #f8f8f8;
             --light-text: #1a1a1a;
             --light-heading: #333;
-            --accent-color-light: #007bff; /* A common accent blue */
+            --accent-color-light: #007bff;
+            /* A common accent blue */
             --dark-bg: #1a1a1a;
             --dark-text: #f8f8f8;
             --dark-heading: #f8f8f8;
-            --accent-color-dark: #8ab4f8; /* A light blue accent for dark mode */
+            --accent-color-dark: #8ab4f8;
+            /* A light blue accent for dark mode */
             --transition-speed: 0.3s;
         }
 
         body {
             font-family: 'Titillium Web', sans-serif;
-            font-size: 1.15em; /* Slightly adjusted base font size */
-            line-height: 1.7; /* Improved line height for readability */
+            font-size: 1.15em;
+            /* Slightly adjusted base font size */
+            line-height: 1.7;
+            /* Improved line height for readability */
             margin: 0;
-            padding: 0; /* Default padding for body */
+            padding: 0;
+            /* Default padding for body */
             background-color: var(--light-bg);
             color: var(--light-text);
             display: flex;
             flex-direction: column;
-            justify-content: center; /* Center content vertically on desktop */
-            align-items: center; /* Center content horizontally on desktop */
-            min-height: 100vh; /* Ensure body takes full viewport height */
+            justify-content: center;
+            /* Center content vertically on desktop */
+            align-items: center;
+            /* Center content horizontally on desktop */
+            min-height: 100vh;
+            /* Ensure body takes full viewport height */
             transition: background-color var(--transition-speed) ease, color var(--transition-speed) ease;
         }
 
         #theme-toggle {
             position: absolute;
-            top: 25px; /* Slightly adjusted position */
-            right: 25px; /* Slightly adjusted position */
+            top: 25px;
+            /* Slightly adjusted position */
+            right: 25px;
+            /* Slightly adjusted position */
             background: none;
             border: none;
-            font-size: 1.2em; /* Slightly increased icon size for better tap target */
+            font-size: 1.2em;
+            /* Slightly increased icon size for better tap target */
             cursor: pointer;
             color: var(--light-text);
             transition: color var(--transition-speed) ease;
-            padding: 5px; /* Add padding for easier clicking */
-            border-radius: 5px; /* Subtle rounded corners */
+            padding: 5px;
+            /* Add padding for easier clicking */
+            border-radius: 5px;
+            /* Subtle rounded corners */
         }
 
         /* Modern focus styling for accessibility */
@@ -72,41 +89,59 @@
         }
 
         .container {
-            text-align: center; /* Centers inline-block children like #tagline-paragraph on desktop */
+            text-align: center;
+            /* Centers inline-block children like #tagline-paragraph on desktop */
             max-width: 650px;
             width: 100%;
-            padding: 20px; /* Internal padding for the container */
+            padding: 20px;
+            /* Internal padding for the container */
         }
 
         h1 {
             color: var(--light-heading);
-            margin-bottom: 10px; /* Adjusted margin */
-            font-size: 3.2em; /* Slightly increased heading font size */
-            letter-spacing: -0.02em; /* Subtle letter spacing */
+            margin-bottom: 10px;
+            /* Adjusted margin */
+            font-size: 3.2em;
+            /* Slightly increased heading font size */
+            letter-spacing: -0.02em;
+            /* Subtle letter spacing */
             transition: color var(--transition-speed) ease;
-            opacity: 0; /* Start invisible for animation */
-            animation: fadeInSlideUp 0.8s ease-out forwards; /* Apply animation */
-            animation-delay: 0.2s; /* Delay for h1 */
+            opacity: 0;
+            /* Start invisible for animation */
+            animation: fadeInSlideUp 0.8s ease-out forwards;
+            /* Apply animation */
+            animation-delay: 0.2s;
+            /* Delay for h1 */
         }
 
         p {
-            margin-bottom: 15px; /* Adjusted margin */
+            margin-bottom: 15px;
+            /* Adjusted margin */
             transition: color var(--transition-speed) ease;
-            white-space: normal; /* Default for mobile: allow wrapping */
-            width: auto; /* Will be overridden by JS on desktop */
+            white-space: normal;
+            /* Default for mobile: allow wrapping */
+            width: auto;
+            /* Will be overridden by JS on desktop */
         }
 
         .subtitle {
-            font-size: 1.6em; /* Slightly increased font size for subtitle */
-            margin-bottom: 10px; /* Adjusted margin below subtitle */
-            font-weight: 400; /* Ensure it's not too bold */
-            opacity: 0; /* Start invisible for animation */
-            animation: fadeInSlideUp 0.8s ease-out forwards; /* Apply animation */
-            animation-delay: 0.4s; /* Delay for subtitle */
+            font-size: 1.6em;
+            /* Slightly increased font size for subtitle */
+            margin-bottom: 10px;
+            /* Adjusted margin below subtitle */
+            font-weight: 400;
+            /* Ensure it's not too bold */
+            opacity: 0;
+            /* Start invisible for animation */
+            animation: fadeInSlideUp 0.8s ease-out forwards;
+            /* Apply animation */
+            animation-delay: 0.4s;
+            /* Delay for subtitle */
         }
 
         .social-links {
-            margin-top: 25px; /* Increased margin above social links */
+            margin-top: 25px;
+            /* Increased margin above social links */
         }
 
         .social-links a {
@@ -175,12 +210,15 @@
 
         /* The typing effect */
         @keyframes blink-caret {
-            from, to { border-color: transparent }
-            50% { border-color: var(--light-text); }
-        }
-        body.night-mode @keyframes blink-caret {
-            from, to { border-color: transparent }
-            50% { border-color: var(--dark-text); }
+
+            from,
+            to {
+                opacity: 0;
+            }
+
+            50% {
+                opacity: 1;
+            }
         }
 
         /* New animation for elements appearing on load */
@@ -189,6 +227,7 @@
                 opacity: 0;
                 transform: translateY(20px);
             }
+
             to {
                 opacity: 1;
                 transform: translateY(0);
@@ -197,32 +236,48 @@
 
         /* Specific styles for the tagline paragraph */
         #tagline-paragraph {
-            display: block; /* Default to block for mobile */
-            text-align: left; /* Ensure text is left-aligned within the paragraph */
-            margin-left: auto; /* Auto margins to center a block element */
-            margin-right: auto; /* Auto margins to center a block element */
-            max-width: 100%; /* Ensure it doesn't overflow its parent on mobile */
+            display: block;
+            /* Default to block for mobile */
+            text-align: left;
+            /* Ensure text is left-aligned within the paragraph */
+            margin-left: auto;
+            /* Auto margins to center a block element */
+            margin-right: auto;
+            /* Auto margins to center a block element */
+            max-width: 100%;
+            /* Ensure it doesn't overflow its parent on mobile */
         }
 
         /* Media query for desktop-specific tagline behavior */
-        @media (min-width: 768px) { /* Adjust this breakpoint as needed */
+        @media (min-width: 768px) {
+
+            /* Adjust this breakpoint as needed */
             #tagline-paragraph {
-                white-space: nowrap; /* Prevent wrapping on desktop */
-                display: inline-block; /* Change to inline-block for desktop to be centered by parent's text-align: center */
+                white-space: nowrap;
+                /* Prevent wrapping on desktop */
+                display: inline-block;
+                /* Change to inline-block for desktop to be centered by parent's text-align: center */
             }
         }
 
         /* Mobile-specific styles */
         @media (max-width: 600px) {
             body {
-                justify-content: flex-start; /* Align content to top on small screens */
-                align-items: center; /* Keep horizontal centering for the container */
-                padding-top: 80px; /* Add padding to body itself for top spacing */
-                padding-bottom: 20px; /* Add some padding at the bottom for consistency */
+                justify-content: flex-start;
+                /* Align content to top on small screens */
+                align-items: center;
+                /* Keep horizontal centering for the container */
+                padding-top: 80px;
+                /* Add padding to body itself for top spacing */
+                padding-bottom: 20px;
+                /* Add some padding at the bottom for consistency */
             }
+
             .container {
-                margin-top: 0; /* Remove margin-top from container on mobile */
-                margin-bottom: 0; /* Remove margin-bottom from container on mobile */
+                margin-top: 0;
+                /* Remove margin-top from container on mobile */
+                margin-bottom: 0;
+                /* Remove margin-bottom from container on mobile */
             }
 
             #theme-toggle {
@@ -246,6 +301,7 @@
         }
     </style>
 </head>
+
 <body>
     <canvas id="fluid-canvas"></canvas>
     <button id="theme-toggle" aria-label="Toggle theme">
@@ -254,12 +310,15 @@
     <main class="container"> <!-- Changed div to main for semantic HTML -->
         <h1>Prikshit Kumar</h1>
         <p class="subtitle">Software Engineer</p>
-        <p id="tagline-paragraph"><span id="tagline-text"></span><span id="typing-cursor" class="typing-cursor">|</span></p>
+        <p id="tagline-paragraph"><span id="tagline-text"></span><span id="typing-cursor" class="typing-cursor">|</span>
+        </p>
         <div class="social-links">
-            <a href="https://github.com/kprikshit" target="_blank" rel="noopener noreferrer" aria-label="GitHub profile">
+            <a href="https://github.com/kprikshit" target="_blank" rel="noopener noreferrer"
+                aria-label="GitHub profile">
                 <i class="fab fa-github"></i>
             </a>
-            <a href="https://linkedin.com/in/kprikshit" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn profile">
+            <a href="https://linkedin.com/in/kprikshit" target="_blank" rel="noopener noreferrer"
+                aria-label="LinkedIn profile">
                 <i class="fab fa-linkedin-in"></i>
             </a>
         </div>
@@ -308,7 +367,7 @@
         }
 
         // Event listener for theme toggle button
-        themeToggle.addEventListener('click', function() {
+        themeToggle.addEventListener('click', function () {
             if (body.classList.contains('night-mode')) {
                 setTheme('day-mode');
             } else {
@@ -376,4 +435,5 @@
     </script>
     <script src="script.js"></script>
 </body>
+
 </html>
