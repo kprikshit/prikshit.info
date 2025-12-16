@@ -728,8 +728,8 @@ window.addEventListener('load', () => {
         h1Element.style.cursor = 'default'; // No longer a special pointer target
     }
 
-    // Global Double Click to spawn green particles
-    window.addEventListener('dblclick', (e) => {
+    // Unified Double Interaction Handler
+    function handleDoubleInteraction(clientX, clientY) {
         // Check if clicked on specific text elements
         const h1 = document.querySelector('h1');
         const sub = document.querySelector('.subtitle');
@@ -740,8 +740,8 @@ window.addEventListener('load', () => {
         [h1, sub, tag].forEach(el => {
             if (el && !spawnedOnText) {
                 const rect = el.getBoundingClientRect();
-                if (e.clientX >= rect.left && e.clientX <= rect.right &&
-                    e.clientY >= rect.top && e.clientY <= rect.bottom) {
+                if (clientX >= rect.left && clientX <= rect.right &&
+                    clientY >= rect.top && clientY <= rect.bottom) {
                     spawnGreenExplosion(rect); // Spawn on perimeter
                     spawnedOnText = true;
                 }
@@ -749,8 +749,26 @@ window.addEventListener('load', () => {
         });
 
         if (!spawnedOnText) {
-            spawnGreenExplosion({ x: e.clientX, y: e.clientY }); // Spawn on point
+            spawnGreenExplosion({ x: clientX, y: clientY }); // Spawn on point
         }
+    }
+
+    // Global Double Click to spawn green particles (Desktop)
+    window.addEventListener('dblclick', (e) => {
+        handleDoubleInteraction(e.clientX, e.clientY);
+    });
+
+    // Mobile Double Tap Detection
+    let lastTap = 0;
+    window.addEventListener('touchend', (e) => {
+        const currentTime = new Date().getTime();
+        const tapLength = currentTime - lastTap;
+        if (tapLength < 500 && tapLength > 0) {
+            e.preventDefault(); // Prevent zoom
+            const touch = e.changedTouches[0];
+            handleDoubleInteraction(touch.clientX, touch.clientY);
+        }
+        lastTap = currentTime;
     });
 
     // Disable selection for other text elements
