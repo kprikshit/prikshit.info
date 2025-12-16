@@ -5,8 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Prikshit Kumar - Software Developer</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <!-- Theme Color for Mobile Browsers -->
+    <!-- Theme Color for Mobile Browsers (Android Chrome, etc.) -->
     <meta name="theme-color" content="#f8f8f8">
+    <!-- iOS Status Bar Style (for Safari when added to home screen) -->
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <link rel="stylesheet" href="style.css">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Titillium+Web:wght@400;700&display=swap');
 
@@ -244,6 +247,7 @@
     </style>
 </head>
 <body>
+    <canvas id="fluid-canvas"></canvas>
     <button id="theme-toggle" aria-label="Toggle theme">
         <i class="fas fa-sun"></i>
     </button>
@@ -265,6 +269,7 @@
         const body = document.body;
         const icon = themeToggle.querySelector('i');
         const themeColorMeta = document.querySelector('meta[name="theme-color"]'); // Get the theme-color meta tag
+        const appleStatusBarMeta = document.querySelector('meta[name="apple-mobile-web-app-status-bar-style"]'); // Get the apple-mobile-web-app-status-bar-style meta tag
 
         // Function to set the theme and update localStorage
         function setTheme(theme) {
@@ -273,16 +278,20 @@
                 icon.classList.remove('fa-sun');
                 icon.classList.add('fa-moon');
                 if (themeColorMeta) {
-                    // Use dark background color for theme-color in night mode
                     themeColorMeta.setAttribute('content', getComputedStyle(document.documentElement).getPropertyValue('--dark-bg').trim());
+                }
+                if (appleStatusBarMeta) {
+                    appleStatusBarMeta.setAttribute('content', 'black-translucent'); // Dark status bar for iOS
                 }
             } else {
                 body.classList.remove('night-mode');
                 icon.classList.remove('fa-moon');
                 icon.classList.add('fa-sun');
                 if (themeColorMeta) {
-                    // Use light background color for theme-color in day mode
                     themeColorMeta.setAttribute('content', getComputedStyle(document.documentElement).getPropertyValue('--light-bg').trim());
+                }
+                if (appleStatusBarMeta) {
+                    appleStatusBarMeta.setAttribute('content', 'default'); // Light status bar for iOS
                 }
             }
             localStorage.setItem('theme', theme); // Store the chosen theme
@@ -365,5 +374,6 @@
         // Re-apply layout on window resize to handle orientation changes or responsive breakpoints
         window.addEventListener('resize', applyTaglineLayout);
     </script>
+    <script src="script.js"></script>
 </body>
 </html>
