@@ -437,60 +437,78 @@ class GreenParticle {
     }
 }
 
-// Handle particle-particle collisions and Infection
-function handleParticleCollisions() {
-    const all = [...particles, ...tempParticles];
-    for (let i = 0; i < all.length; i++) {
-        for (let j = i + 1; j < all.length; j++) {
-            const p1 = all[i];
-            const p2 = all[j];
+// Helper for collision resolution between two particles
+function resolveParticleCollision(p1, p2) {
+    const dx = p2.x - p1.x;
+    const dy = p2.y - p1.y;
+    const distSq = dx * dx + dy * dy;
 
-            const dx = p2.x - p1.x;
-            const dy = p2.y - p1.y;
-            const distSq = dx * dx + dy * dy;
+    const r1 = p1.size || particleSize;
+    const r2 = p2.size || particleSize;
+    const minDist = r1 + r2;
 
-            const r1 = p1.size || particleSize;
-            const r2 = p2.size || particleSize;
-            const minDist = r1 + r2;
+    if (distSq < minDist * minDist) {
+        const dist = Math.sqrt(distSq);
 
-            if (distSq < minDist * minDist) {
-                const dist = Math.sqrt(distSq);
+        // Normal
+        const nx = dx / dist;
+        const ny = dy / dist;
 
-                // Normal
-                const nx = dx / dist;
-                const ny = dy / dist;
+        // Separate to prevent overlap
+        const overlap = minDist - dist;
+        const sepX = nx * overlap * 0.5;
+        const sepY = ny * overlap * 0.5;
 
-                // Separate to prevent overlap
-                const overlap = minDist - dist;
-                const sepX = nx * overlap * 0.5;
-                const sepY = ny * overlap * 0.5;
+        p1.x -= sepX;
+        p1.y -= sepY;
+        p2.x += sepX;
+        p2.y += sepY;
 
-                p1.x -= sepX;
-                p1.y -= sepY;
-                p2.x += sepX;
-                p2.y += sepY;
+        // Elastic Bounce
+        const dvx = p1.vx - p2.vx;
+        const dvy = p1.vy - p2.vy;
+        const dot = dvx * nx + dvy * ny;
 
-                // Elastic Bounce
-                const dvx = p1.vx - p2.vx;
-                const dvy = p1.vy - p2.vy;
-                const dot = dvx * nx + dvy * ny;
+        if (dot > 0) {
+            p1.vx -= dot * nx;
+            p1.vy -= dot * ny;
+            p2.vx += dot * nx;
+            p2.vy += dot * ny;
+        }
 
-                if (dot > 0) {
-                    p1.vx -= dot * nx;
-                    p1.vy -= dot * ny;
-                    p2.vx += dot * nx;
-                    p2.vy += dot * ny;
-                }
-
-                // INFECTION LOGIC: Green converts Blue
-                if (Math.random() < 0.01) { // 1% chance on collision
-                    if (p1 instanceof GreenParticle && p2 instanceof Particle) {
-                        p2.markedForConversion = true;
-                    } else if (p2 instanceof GreenParticle && p1 instanceof Particle) {
-                        p1.markedForConversion = true;
-                    }
-                }
+        // INFECTION LOGIC: Green converts Blue
+        if (Math.random() < 0.01) { // 1% chance on collision
+            if (p1 instanceof GreenParticle && p2 instanceof Particle) {
+                p2.markedForConversion = true;
+            } else if (p2 instanceof GreenParticle && p1 instanceof Particle) {
+                p1.markedForConversion = true;
             }
+        }
+    }
+}
+
+// Handle particle-particle collisions and Infection (Alloc-free)
+function handleParticleCollisions() {
+    // 1. Blue-Blue Collisions
+    const pCount = particles.length;
+    for (let i = 0; i < pCount; i++) {
+        for (let j = i + 1; j < pCount; j++) {
+            resolveParticleCollision(particles[i], particles[j]);
+        }
+    }
+
+    // 2. Green-Green Collisions
+    const tCount = tempParticles.length;
+    for (let i = 0; i < tCount; i++) {
+        for (let j = i + 1; j < tCount; j++) {
+            resolveParticleCollision(tempParticles[i], tempParticles[j]);
+        }
+    }
+
+    // 3. Blue-Green Collisions
+    for (let i = 0; i < pCount; i++) {
+        for (let j = 0; j < tCount; j++) {
+            resolveParticleCollision(particles[i], tempParticles[j]);
         }
     }
 }
@@ -623,9 +641,9 @@ function animate() {
         sw.update();
         sw.draw();
 
-        // Interaction: Shockwave pushes all particles
-        const all = [...particles, ...tempParticles];
-        all.forEach(p => sw.interact(p));
+        // Interaction: Shockwave pushes all particles (No allocation)
+        for (let j = 0; j < particles.length; j++) sw.interact(particles[j]);
+        for (let j = 0; j < tempParticles.length; j++) sw.interact(tempParticles[j]);
 
         if (sw.alpha <= 0) {
             shockwaves.splice(i, 1);
@@ -709,6 +727,9 @@ window.addEventListener('load', () => {
     window.triggerNameShockwave = function () {
         const h1 = document.querySelector('h1');
         if (h1) {
+            // Force update collision zones now that typing is done
+            updateCollisionZones();
+
             const rect = h1.getBoundingClientRect();
             // Contained expansion (subtle) around the name
             // Use RectangularShockwave
@@ -785,18 +806,8 @@ window.addEventListener('load', () => {
         }
     });
 
-    // Observe tagline for text changes (typewriter effect) to update collision zones dynamically
-    const taglineNode = document.getElementById('tagline-paragraph');
-    let updateTimeout;
-    if (taglineNode) {
-        const taglineObserver = new MutationObserver(() => {
-            if (updateTimeout) clearTimeout(updateTimeout);
-            updateTimeout = setTimeout(() => {
-                updateCollisionZones();
-            }, 100);
-        });
-        taglineObserver.observe(taglineNode, { childList: true, subtree: true, characterData: true });
-    }
+    // Removed expensive MutationObserver for tagline. 
+    // Layout updates are now triggered by window resize or explicitly when Typewriter finishes.
 });
 
 // Theme Observer
