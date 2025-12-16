@@ -22,8 +22,19 @@
         }
 
         html {
-            overflow: hidden;
-            /* Prevent scroll bars */
+            overflow-y: auto;
+            /* Allow scrolling */
+            scrollbar-width: none;
+            /* Firefox: hide bar */
+            -ms-overflow-style: none;
+            /* IE/Edge: hide bar */
+        }
+
+        html::-webkit-scrollbar {
+            width: 0;
+            height: 0;
+            display: none;
+            /* Chrome/Safari: hide bar */
         }
 
         /* CSS Variables for easier theme management */
@@ -58,8 +69,11 @@
             /* Center content vertically on desktop */
             align-items: center;
             /* Center content horizontally on desktop */
-            min-height: 100vh;
-            /* Ensure body takes full viewport height */
+            /* Center content horizontally on desktop */
+            min-height: 100dvh;
+            /* Ensure body takes full dynamic viewport height */
+            padding-bottom: env(safe-area-inset-bottom);
+            /* Respect safe area */
             transition: background-color var(--transition-speed) ease, color var(--transition-speed) ease;
         }
 

@@ -10,7 +10,7 @@ const particleSize = 2.2;
 const mouseInfluenceRadius = 150;
 const mouseForce = 0.15;
 const clickForce = 3;
-const MAX_GREEN_PARTICLES = 400;
+const MAX_GREEN_PARTICLES = Math.floor(numParticles * 1.25); // 375 if numParticles is 300
 
 // Collision System: Hierarchical
 // collisionZones = [ { bounds: {top, left...}, children: [ {top, left...} ] } ]
@@ -462,40 +462,37 @@ function spawnGreenExplosionAround(rect) {
     const centerX = rect.left + rect.width / 2;
     const centerY = rect.top + rect.height / 2;
 
-    // Randomize count: 20 to 50
-    const count = 20 + Math.floor(Math.random() * 31);
+    // Randomize count: 1 to 20
+    const count = 1 + Math.floor(Math.random() * 20);
 
     for (let i = 0; i < count; i++) {
         if (tempParticles.length >= MAX_GREEN_PARTICLES) break;
         let x, y, vx, vy;
         const side = Math.floor(Math.random() * 4); // 0: Top, 1: Right, 2: Bottom, 3: Left
 
+        // Spawn on perimeter
         switch (side) {
             case 0: // Top
                 x = rect.left + Math.random() * rect.width;
                 y = rect.top - 5;
-                vx = (Math.random() - 0.5) * 10;
-                vy = -Math.random() * 10 - 5;
                 break;
             case 1: // Right
                 x = rect.right + 5;
                 y = rect.top + Math.random() * rect.height;
-                vx = Math.random() * 10 + 5;
-                vy = (Math.random() - 0.5) * 10;
                 break;
             case 2: // Bottom
                 x = rect.left + Math.random() * rect.width;
                 y = rect.bottom + 5;
-                vx = (Math.random() - 0.5) * 10;
-                vy = Math.random() * 10 + 5;
                 break;
             case 3: // Left
                 x = rect.left - 5;
                 y = rect.top + Math.random() * rect.height;
-                vx = -Math.random() * 10 - 5;
-                vy = (Math.random() - 0.5) * 10;
                 break;
         }
+
+        // Emit in all directions at medium pace
+        vx = (Math.random() - 0.5) * 6; // Medium speed, random direction
+        vy = (Math.random() - 0.5) * 6;
 
         const p = new GreenParticle(x, y);
         p.vx = vx;
