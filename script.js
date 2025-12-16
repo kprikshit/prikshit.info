@@ -10,6 +10,7 @@ const particleSize = 2.2;
 const mouseInfluenceRadius = 150;
 const mouseForce = 0.15;
 const clickForce = 3;
+const MAX_GREEN_PARTICLES = 400;
 
 // Collision System: Hierarchical
 // collisionZones = [ { bounds: {top, left...}, children: [ {top, left...} ] } ]
@@ -461,7 +462,11 @@ function spawnGreenExplosionAround(rect) {
     const centerX = rect.left + rect.width / 2;
     const centerY = rect.top + rect.height / 2;
 
-    for (let i = 0; i < 60; i++) {
+    // Randomize count: 20 to 50
+    const count = 20 + Math.floor(Math.random() * 31);
+
+    for (let i = 0; i < count; i++) {
+        if (tempParticles.length >= MAX_GREEN_PARTICLES) break;
         let x, y, vx, vy;
         const side = Math.floor(Math.random() * 4); // 0: Top, 1: Right, 2: Bottom, 3: Left
 
