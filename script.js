@@ -25,6 +25,8 @@ let mouse = {
     isMoving: false
 };
 
+let isNightMode = false;
+
 // Shockwave Class
 class Shockwave {
     constructor(x, y, opts = null) {
@@ -339,7 +341,6 @@ class Particle {
     }
 
     getParticleColor() {
-        const isNightMode = document.body.classList.contains('night-mode');
         return isNightMode ? '#00d2ff' : '#007bff';
     }
 }
@@ -623,6 +624,7 @@ function explodeParticles(x, y) {
 // Animation loop
 function animate() {
     requestAnimationFrame(animate);
+    isNightMode = document.body.classList.contains('night-mode');
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     if (particles.length === 0) {
@@ -809,13 +811,3 @@ window.addEventListener('load', () => {
     // Removed expensive MutationObserver for tagline. 
     // Layout updates are now triggered by window resize or explicitly when Typewriter finishes.
 });
-
-// Theme Observer
-const observer = new MutationObserver((mutations) => {
-    mutations.forEach((mutation) => {
-        if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
-            // Theme handled
-        }
-    });
-});
-observer.observe(document.body, { attributes: true });
