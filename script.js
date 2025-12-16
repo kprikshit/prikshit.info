@@ -4,6 +4,7 @@ const ctx = canvas.getContext('2d');
 
 let particles = [];
 let tempParticles = []; // Green balls
+let shockwaves = []; // Shockwaves from expiring green balls
 const numParticles = 300;
 const particleSize = 2.2;
 const mouseInfluenceRadius = 150;
@@ -22,6 +23,36 @@ let mouse = {
     isClicked: false,
     isMoving: false
 };
+
+// Shockwave Class
+class Shockwave {
+    constructor(x, y) {
+        this.x = x;
+        this.y = y;
+        this.radius = 1;
+        // Variability: 90% small (15-30px), 10% big (50-80px)
+        const isBig = Math.random() < 0.1;
+        this.maxRadius = isBig ? 50 + Math.random() * 30 : 15 + Math.random() * 15;
+        this.alpha = 1;
+        this.speed = isBig ? 3 : 2;
+        this.force = isBig ? 1.5 : 0.5;
+    }
+
+    draw() {
+        ctx.save();
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+        ctx.strokeStyle = `rgba(144, 238, 144, ${this.alpha})`;
+        ctx.lineWidth = 3;
+        ctx.stroke();
+        ctx.restore();
+    }
+
+    update() {
+        this.radius += this.speed;
+        this.alpha -= 0.02; // Fade out
+    }
+}
 
 // Adjust canvas size and collision bounds on load and resize
 function handleResize() {
@@ -177,57 +208,6 @@ function resolveCollisions(p) {
     }
 }
 
-// Handle particle-particle collisions
-function handleParticleCollisions() {
-    const all = [...particles, ...tempParticles];
-    for (let i = 0; i < all.length; i++) {
-        for (let j = i + 1; j < all.length; j++) {
-            const p1 = all[i];
-            const p2 = all[j];
-
-            const dx = p2.x - p1.x;
-            const dy = p2.y - p1.y;
-            const distSq = dx * dx + dy * dy;
-
-            // Assume both use similar radii or fetch from property
-            const r1 = p1.size || particleSize;
-            const r2 = p2.size || particleSize;
-            const minDist = r1 + r2;
-
-            if (distSq < minDist * minDist) {
-                const dist = Math.sqrt(distSq);
-
-                // Normal
-                const nx = dx / dist;
-                const ny = dy / dist;
-
-                // Separate to prevent overlap
-                const overlap = minDist - dist;
-                const sepX = nx * overlap * 0.5;
-                const sepY = ny * overlap * 0.5;
-
-                p1.x -= sepX;
-                p1.y -= sepY;
-                p2.x += sepX;
-                p2.y += sepY;
-
-                // Elastic Bounce (exchange momentum relative to normal)
-                const dvx = p1.vx - p2.vx;
-                const dvy = p1.vy - p2.vy;
-                const dot = dvx * nx + dvy * ny;
-
-                if (dot > 0) { // If moving towards each other
-                    p1.vx -= dot * nx;
-                    p1.vy -= dot * ny;
-                    p2.vx += dot * nx;
-                    p2.vy += dot * ny;
-                }
-            }
-        }
-    }
-}
-
-
 // Persisent Particle (Blue)
 class Particle {
     constructor(x, y) {
@@ -236,7 +216,8 @@ class Particle {
         this.vx = (Math.random() - 0.5) * 1.5;
         this.vy = (Math.random() - 0.5) * 1.5;
         this.friction = 0.99;
-        this.size = particleSize; // Explicit size
+        this.size = particleSize;
+        this.markedForConversion = false; // Infection flag
     }
 
     draw() {
@@ -327,6 +308,7 @@ class GreenParticle {
         this.life = 3600 + Math.random() * 1800; // 60-90s
         this.maxLife = this.life;
         this.color = '#90ee90';
+        // removed markedForRemoval as random explosions are disabled
     }
 
     draw() {
@@ -403,6 +385,65 @@ class GreenParticle {
         }
 
         this.life--;
+        // Random explosion logic removed
+    }
+}
+
+// Handle particle-particle collisions and Infection
+function handleParticleCollisions() {
+    const all = [...particles, ...tempParticles];
+    for (let i = 0; i < all.length; i++) {
+        for (let j = i + 1; j < all.length; j++) {
+            const p1 = all[i];
+            const p2 = all[j];
+
+            const dx = p2.x - p1.x;
+            const dy = p2.y - p1.y;
+            const distSq = dx * dx + dy * dy;
+
+            const r1 = p1.size || particleSize;
+            const r2 = p2.size || particleSize;
+            const minDist = r1 + r2;
+
+            if (distSq < minDist * minDist) {
+                const dist = Math.sqrt(distSq);
+
+                // Normal
+                const nx = dx / dist;
+                const ny = dy / dist;
+
+                // Separate to prevent overlap
+                const overlap = minDist - dist;
+                const sepX = nx * overlap * 0.5;
+                const sepY = ny * overlap * 0.5;
+
+                p1.x -= sepX;
+                p1.y -= sepY;
+                p2.x += sepX;
+                p2.y += sepY;
+
+                // Elastic Bounce
+                const dvx = p1.vx - p2.vx;
+                const dvy = p1.vy - p2.vy;
+                const dot = dvx * nx + dvy * ny;
+
+                if (dot > 0) {
+                    p1.vx -= dot * nx;
+                    p1.vy -= dot * ny;
+                    p2.vx += dot * nx;
+                    p2.vy += dot * ny;
+                }
+
+                // INFECTION LOGIC: Green converts Blue
+                if (Math.random() < 0.01) { // 1% chance on collision
+                    if (p1 instanceof GreenParticle && p2 instanceof Particle) {
+                        p2.markedForConversion = true;
+                    } else if (p2 instanceof GreenParticle && p1 instanceof Particle) {
+                        p1.markedForConversion = true;
+                    }
+                }
+            }
+        }
     }
 }
 
@@ -416,9 +457,45 @@ function initParticles() {
     }
 }
 
-function spawnGreenExplosion(x, y) {
-    for (let i = 0; i < 40; i++) {
-        tempParticles.push(new GreenParticle(x, y));
+function spawnGreenExplosionAround(rect) {
+    const centerX = rect.left + rect.width / 2;
+    const centerY = rect.top + rect.height / 2;
+
+    for (let i = 0; i < 60; i++) {
+        let x, y, vx, vy;
+        const side = Math.floor(Math.random() * 4); // 0: Top, 1: Right, 2: Bottom, 3: Left
+
+        switch (side) {
+            case 0: // Top
+                x = rect.left + Math.random() * rect.width;
+                y = rect.top - 5;
+                vx = (Math.random() - 0.5) * 10;
+                vy = -Math.random() * 10 - 5;
+                break;
+            case 1: // Right
+                x = rect.right + 5;
+                y = rect.top + Math.random() * rect.height;
+                vx = Math.random() * 10 + 5;
+                vy = (Math.random() - 0.5) * 10;
+                break;
+            case 2: // Bottom
+                x = rect.left + Math.random() * rect.width;
+                y = rect.bottom + 5;
+                vx = (Math.random() - 0.5) * 10;
+                vy = Math.random() * 10 + 5;
+                break;
+            case 3: // Left
+                x = rect.left - 5;
+                y = rect.top + Math.random() * rect.height;
+                vx = -Math.random() * 10 - 5;
+                vy = (Math.random() - 0.5) * 10;
+                break;
+        }
+
+        const p = new GreenParticle(x, y);
+        p.vx = vx;
+        p.vy = vy;
+        tempParticles.push(p);
     }
 }
 
@@ -454,18 +531,62 @@ function animate() {
         particles[i].draw();
     }
 
+    // Update Shockwaves
+    for (let i = shockwaves.length - 1; i >= 0; i--) {
+        const sw = shockwaves[i];
+        sw.update();
+        sw.draw();
+
+        // Interaction: Shockwave pushes all particles
+        const all = [...particles, ...tempParticles];
+        all.forEach(p => {
+            const dx = p.x - sw.x;
+            const dy = p.y - sw.y;
+            const dist = Math.sqrt(dx * dx + dy * dy);
+
+            // Push particles at the wavefront
+            if (dist < sw.radius + 5 && dist > sw.radius - 20) {
+                const angle = Math.atan2(dy, dx);
+                const force = sw.force;
+                p.vx += Math.cos(angle) * force;
+                p.vy += Math.sin(angle) * force;
+            }
+        });
+
+        if (sw.alpha <= 0) {
+            shockwaves.splice(i, 1);
+        }
+    }
+
     // Update Temp Particles
     for (let i = tempParticles.length - 1; i >= 0; i--) {
         const p = tempParticles[i];
         p.update();
         p.draw();
+
+        // Death Logic: Spawn Shockwave with low probability
         if (p.life <= 0) {
+            if (Math.random() < 0.05) { // 5% chance
+                shockwaves.push(new Shockwave(p.x, p.y));
+            }
             tempParticles.splice(i, 1);
         }
     }
 
-    // Resolve Particle-Particle Collisions
+    // Resolve Particle-Particle Collisions (Physics & Infection)
     handleParticleCollisions();
+
+    // Process Infections (Blue -> Green)
+    for (let i = particles.length - 1; i >= 0; i--) {
+        if (particles[i].markedForConversion) {
+            const p = particles[i];
+            const gp = new GreenParticle(p.x, p.y);
+            gp.vx = p.vx;
+            gp.vy = p.vy;
+            tempParticles.push(gp);
+            particles.splice(i, 1);
+        }
+    }
 }
 
 // Mouse events
@@ -520,11 +641,11 @@ window.addEventListener('load', () => {
 
         if (isTouchDevice) {
             h1Element.addEventListener('click', (e) => {
-                spawnGreenExplosion(e.clientX, e.clientY);
+                spawnGreenExplosionAround(h1Element.getBoundingClientRect());
             });
         } else {
             h1Element.addEventListener('dblclick', (e) => {
-                spawnGreenExplosion(e.clientX, e.clientY);
+                spawnGreenExplosionAround(h1Element.getBoundingClientRect());
             });
         }
     }
