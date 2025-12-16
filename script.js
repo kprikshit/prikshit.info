@@ -706,16 +706,14 @@ window.addEventListener('load', () => {
     animate();
 
     // Export function to trigger shockwave from external scripts (e.g. index.html)
-    window.triggerTaglineShockwave = function () {
-        const tagline = document.getElementById('tagline-paragraph');
-        if (tagline) {
-            const rect = tagline.getBoundingClientRect();
-            const centerX = rect.left + rect.width / 2;
-            const centerY = rect.top + rect.height / 2;
-            // Contained expansion (subtle)
+    window.triggerNameShockwave = function () {
+        const h1 = document.querySelector('h1');
+        if (h1) {
+            const rect = h1.getBoundingClientRect();
+            // Contained expansion (subtle) around the name
             // Use RectangularShockwave
             shockwaves.push(new RectangularShockwave(rect, {
-                maxRadius: 25, // Contained expansion (subtle)
+                maxRadius: 30, // Slightly larger than tagline but still subtle relative to H1 size
                 force: 2,
                 speed: 1 // Slower speed
             }));

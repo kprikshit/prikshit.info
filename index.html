@@ -112,10 +112,13 @@
         }
 
         h1 {
-            display: inline-block;
-            /* Shrink to fit text */
+            display: block;
+            width: fit-content;
+            margin-left: auto;
+            margin-right: auto;
             color: var(--light-heading);
-            margin-bottom: 10px;
+            margin-bottom: 0px;
+            /* Reduced gap */
             /* Adjusted margin */
             font-size: 3.2em;
             /* Slightly increased heading font size */
@@ -141,8 +144,12 @@
         }
 
         .subtitle {
-            display: inline-block;
-            /* Shrink to fit text */
+            display: block;
+            width: fit-content;
+            margin-left: auto;
+            margin-right: auto;
+            margin-top: 0px;
+            /* Ensure no top margin */
             font-size: 1.6em;
             /* Slightly increased font size for subtitle */
             margin-bottom: 10px;
@@ -160,6 +167,8 @@
         .social-links {
             margin-top: 25px;
             /* Increased margin above social links */
+            user-select: none;
+            -webkit-user-select: none;
         }
 
         .social-links a {
@@ -326,10 +335,9 @@
         <i class="fas fa-sun"></i>
     </button>
     <main class="container"> <!-- Changed div to main for semantic HTML -->
-        <h1>Prikshit Kumar</h1>
+        <h1><span id="heading-text"></span><span id="typing-cursor" class="typing-cursor">|</span></h1>
         <p class="subtitle">Software Engineer</p>
-        <p id="tagline-paragraph"><span id="tagline-text"></span><span id="typing-cursor" class="typing-cursor">|</span>
-        </p>
+        <p id="tagline-paragraph">Engineering elegant software to solve complex, real-world problems.</p>
         <div class="social-links">
             <a href="https://github.com/kprikshit" target="_blank" rel="noopener noreferrer"
                 aria-label="GitHub profile">
@@ -393,67 +401,33 @@
             }
         });
 
-        // Typewriter effect for tagline
-        const taglineTextElement = document.getElementById('tagline-text');
-        const taglineParagraph = document.getElementById('tagline-paragraph'); // Get the parent paragraph
+        // Typewriter effect for Heading
+        const headingTextElement = document.getElementById('heading-text');
         const typingCursor = document.getElementById('typing-cursor'); // Get the cursor element
-        const tagline = "Engineering elegant software to solve complex, real-world problems.";
+        const headingText = "Prikshit Kumar";
         let i = 0;
-        const typingSpeed = 25; // milliseconds per character
-
-        // Function to calculate and set the width of the tagline paragraph based on screen size
-        function applyTaglineLayout() {
-            // Check if we are on a "desktop" screen based on the media query
-            // This media query should match the one in your CSS for #tagline-paragraph
-            const isDesktop = window.matchMedia('(min-width: 768px)').matches;
-
-            if (isDesktop) {
-                // Create a temporary element to measure the full text width
-                const tempSpan = document.createElement('span');
-                tempSpan.style.visibility = 'hidden'; // Make it invisible
-                tempSpan.style.position = 'absolute'; // Take it out of flow
-                tempSpan.style.whiteSpace = 'nowrap'; // Ensure it measures as a single line
-                // Match font styles to ensure accurate width calculation
-                tempSpan.style.fontSize = window.getComputedStyle(taglineTextElement).fontSize;
-                tempSpan.style.fontFamily = window.getComputedStyle(taglineTextElement).fontFamily;
-                tempSpan.textContent = tagline; // Set the full text
-
-                document.body.appendChild(tempSpan); // Add to DOM to measure
-                const fullWidth = tempSpan.offsetWidth; // Get the width
-                document.body.removeChild(tempSpan); // Remove it
-
-                // Apply the calculated width to the tagline paragraph with a small buffer
-                taglineParagraph.style.width = `${fullWidth + 10}px`;
-            } else {
-                // On mobile, remove fixed width to allow wrapping
-                taglineParagraph.style.width = 'auto';
-            }
-        }
+        const typingSpeed = 100; // Slower for name
 
         function typeWriter() {
-            if (i < tagline.length) {
-                taglineTextElement.innerHTML += tagline.charAt(i);
+            if (i < headingText.length) {
+                headingTextElement.innerHTML += headingText.charAt(i);
                 i++;
                 setTimeout(typeWriter, typingSpeed);
             } else {
                 // Typing is complete, hide the cursor completely
                 typingCursor.style.display = 'none';
                 // Trigger shockwave to disperse particles
-                if (window.triggerTaglineShockwave) {
-                    window.triggerTaglineShockwave();
+                if (window.triggerNameShockwave) {
+                    window.triggerNameShockwave();
                 }
             }
         }
 
         // Initial layout application on page load
         window.addEventListener('load', () => {
-            applyTaglineLayout(); // Set initial width based on screen size
-            // Start typewriter after name and subtitle animations have had time to play
-            setTimeout(typeWriter, 1200); // Delay before typing starts
+            // Start typewriter after a short delay
+            setTimeout(typeWriter, 500);
         });
-
-        // Re-apply layout on window resize to handle orientation changes or responsive breakpoints
-        window.addEventListener('resize', applyTaglineLayout);
     </script>
     <script src="script.js"></script>
 </body>
