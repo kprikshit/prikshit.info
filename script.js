@@ -104,15 +104,14 @@ function updateCollisionZones() {
 }
 
 window.addEventListener('resize', handleResize);
-// Call initially on script load (though DOM might not be fully ready, useful for fast reloads)
+// Call initially
 handleResize();
 
 // Hierarchical Collision Resolution
 function resolveCollisions(p) {
     // Check Broadphase Zones first
-    // Expand bounds check slightly by particle size + padding
     const broadPadding = 20;
-    const detailPadding = 2; // Very tight padding for letters
+    const detailPadding = 2; // Tight padding for letters
 
     for (let z = 0; z < collisionZones.length; z++) {
         const zone = collisionZones[z];
@@ -134,9 +133,8 @@ function resolveCollisions(p) {
 
                 const dx = p.x - closestX;
                 const dy = p.y - closestY;
-                const distanceSq = dx * dx + dy * dy; // Avoid sqrt if possible
+                const distanceSq = dx * dx + dy * dy;
 
-                // Check collision (distance < particleSize)
                 if (distanceSq < particleSize * particleSize) {
                     const distance = Math.sqrt(distanceSq);
 
@@ -179,6 +177,57 @@ function resolveCollisions(p) {
     }
 }
 
+// Handle particle-particle collisions
+function handleParticleCollisions() {
+    const all = [...particles, ...tempParticles];
+    for (let i = 0; i < all.length; i++) {
+        for (let j = i + 1; j < all.length; j++) {
+            const p1 = all[i];
+            const p2 = all[j];
+
+            const dx = p2.x - p1.x;
+            const dy = p2.y - p1.y;
+            const distSq = dx * dx + dy * dy;
+
+            // Assume both use similar radii or fetch from property
+            const r1 = p1.size || particleSize;
+            const r2 = p2.size || particleSize;
+            const minDist = r1 + r2;
+
+            if (distSq < minDist * minDist) {
+                const dist = Math.sqrt(distSq);
+
+                // Normal
+                const nx = dx / dist;
+                const ny = dy / dist;
+
+                // Separate to prevent overlap
+                const overlap = minDist - dist;
+                const sepX = nx * overlap * 0.5;
+                const sepY = ny * overlap * 0.5;
+
+                p1.x -= sepX;
+                p1.y -= sepY;
+                p2.x += sepX;
+                p2.y += sepY;
+
+                // Elastic Bounce (exchange momentum relative to normal)
+                const dvx = p1.vx - p2.vx;
+                const dvy = p1.vy - p2.vy;
+                const dot = dvx * nx + dvy * ny;
+
+                if (dot > 0) { // If moving towards each other
+                    p1.vx -= dot * nx;
+                    p1.vy -= dot * ny;
+                    p2.vx += dot * nx;
+                    p2.vy += dot * ny;
+                }
+            }
+        }
+    }
+}
+
+
 // Persisent Particle (Blue)
 class Particle {
     constructor(x, y) {
@@ -187,11 +236,12 @@ class Particle {
         this.vx = (Math.random() - 0.5) * 1.5;
         this.vy = (Math.random() - 0.5) * 1.5;
         this.friction = 0.99;
+        this.size = particleSize; // Explicit size
     }
 
     draw() {
         ctx.beginPath();
-        ctx.arc(this.x, this.y, particleSize, 0, Math.PI * 2);
+        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
         ctx.fillStyle = this.getParticleColor();
         ctx.fill();
     }
@@ -234,11 +284,22 @@ class Particle {
         this.vx *= this.friction;
         this.vy *= this.friction;
 
-        // Screen wrapping
-        if (this.x < 0) this.x = canvas.width;
-        if (this.x > canvas.width) this.x = 0;
-        if (this.y < 0) this.y = canvas.height;
-        if (this.y > canvas.height) this.y = 0;
+        // Wall Reflection (Bounce)
+        if (this.x < this.size) {
+            this.x = this.size;
+            this.vx *= -1;
+        } else if (this.x > canvas.width - this.size) {
+            this.x = canvas.width - this.size;
+            this.vx *= -1;
+        }
+
+        if (this.y < this.size) {
+            this.y = this.size;
+            this.vy *= -1;
+        } else if (this.y > canvas.height - this.size) {
+            this.y = canvas.height - this.size;
+            this.vy *= -1;
+        }
 
         const speed = Math.sqrt(this.vx * this.vx + this.vy * this.vy);
         const maxSpeed = 3;
@@ -317,10 +378,22 @@ class GreenParticle {
         this.vx *= this.friction;
         this.vy *= this.friction;
 
-        if (this.x < 0) this.x = canvas.width;
-        if (this.x > canvas.width) this.x = 0;
-        if (this.y < 0) this.y = canvas.height;
-        if (this.y > canvas.height) this.y = 0;
+        // Wall Reflection (Bounce)
+        if (this.x < this.size) {
+            this.x = this.size;
+            this.vx *= -1;
+        } else if (this.x > canvas.width - this.size) {
+            this.x = canvas.width - this.size;
+            this.vx *= -1;
+        }
+
+        if (this.y < this.size) {
+            this.y = this.size;
+            this.vy *= -1;
+        } else if (this.y > canvas.height - this.size) {
+            this.y = canvas.height - this.size;
+            this.vy *= -1;
+        }
 
         const speed = Math.sqrt(this.vx * this.vx + this.vy * this.vy);
         const maxSpeed = 10;
@@ -390,6 +463,9 @@ function animate() {
             tempParticles.splice(i, 1);
         }
     }
+
+    // Resolve Particle-Particle Collisions
+    handleParticleCollisions();
 }
 
 // Mouse events
